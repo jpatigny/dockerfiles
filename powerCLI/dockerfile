@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
-ENV POWERCLI_VERSION 12.2.0.17538434
+ENV POWERCLI_VERSION 12.3.0.17860403
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
