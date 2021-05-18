@@ -25,12 +25,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: change to powerCLI directory
-        run: cd powerCLI
-
       # Runs a set of commands using the runners shell
       - name: list folder 
         run: |
+          cd powerCLI
           ls
-          Write-Output "test 2"
