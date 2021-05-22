@@ -1,5 +1,14 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
-ENV chocolateyVersion 0.10.15
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-RUN powershell iex(iwr -useb https://chocolatey.org/install.ps1)
+ENV chocolateyVersion 0.10.15
+ENV chocolateyUseWindowsCompression false
+
+RUN mkdir $env:ProgramFiles\WindowsPowerShell\Modules\ChocoHelpers ; \
+    iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); \
+    choco feature disable --name showDownloadProgress
+
+ADD ["data/ChocoHelpers.psm1", "C:/Program Files/WindowsPowerShell/Modules/ChocoHelpers"]
+
+ENTRYPOINT [ "powershell.exe" ]
