@@ -47,31 +47,3 @@ jobs:
           docker push jpatigny/chocolatey:$version
           docker tag chocolatey jpatigny/chocolatey:latest
           docker push jpatigny/chocolatey:latest
-
-  nux_push_to_registry:
-    name: Push Liux Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout code
-        uses: actions/checkout@v2
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: build and push powerCLI
-        shell: pwsh
-        run: |
-          cd powerCLI
-          docker build -t powercli .
-          $version=$(select-string -Path Dockerfile -Pattern "ENV POWERCLI_VERSION").ToString().split()[-1]
-          docker tag powercli jpatigny/powercli:$version
-          docker push jpatigny/powercli:$version
-          docker tag powercli jpatigny/powercli:latest
-          docker push jpatigny/powercli:latest
