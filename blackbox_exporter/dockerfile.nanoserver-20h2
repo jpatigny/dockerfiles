@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/powershell:nanoserver-20h2 as build
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ENV BLACKBOX_VERSION "0.19.0"
+
+LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
+
+RUN md c:\blackbox_exporter-data ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/blackbox_exporter/releases/download/v$($env:BLACKBOX_VERSION)/blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -outfile blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -Verbose ; \
+    Expand-Archive -Path blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -DestinationPath C:\ -Verbose ; \
+    mv blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64 C:\blackbox_exporter -Verbose ; \
+    md C:\blackbox_exporter\config ; \
+    mv C:\blackbox_exporter\blackbox.yml C:\blackbox_exporter\config
+
+USER       ContainerUser
+WORKDIR    C:/blackbox_exporter-data
+EXPOSE     9115
+VOLUME     [ "C:/blackbox_exporter-data" ]
+ENTRYPOINT [ "C:/blackbox_exporter/blackbox_exporter.exe" ]
+CMD        [ "--config.file=C:/blackbox_exporter/config/blackbox.yml" ]
+
