@@ -23,12 +23,34 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
-        name: build and push prometheus
+        name: build and push prometheus nanoserver 1809
         shell: pwsh
         run: |
           $name       = 'prometheus'
           $os_type    = 'nanoserver'
           $os_version = '1809'
+          cd $name
+          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV PROMETHEUS_VERSION").ToString().split()[-1]
+          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      -
+        name: build and push prometheus nanoserver 1909
+        shell: pwsh
+        run: |
+          $name       = 'prometheus'
+          $os_type    = 'nanoserver'
+          $os_version = '1909'
+          cd $name
+          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV PROMETHEUS_VERSION").ToString().split()[-1]
+          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      -
+        name: build and push prometheus nanoserver 2004
+        shell: pwsh
+        run: |
+          $name       = 'prometheus'
+          $os_type    = 'nanoserver'
+          $os_version = '2004'
           cd $name
           $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV PROMETHEUS_VERSION").ToString().split()[-1]
           docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
