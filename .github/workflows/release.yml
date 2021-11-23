@@ -29,42 +29,42 @@ jobs:
         name: build and push powerCLI
         shell: pwsh
         run: |
-          cd powerCLI
-          docker build -t powercli .
-          $version=$(select-string -Path Dockerfile -Pattern "ENV POWERCLI_VERSION").ToString().split()[-1]
-          docker tag powercli jpatigny/powercli:$version
-          docker push jpatigny/powercli:$version
-          docker tag powercli jpatigny/powercli:latest
-          docker push jpatigny/powercli:latest
+          $name       = 'powercli'
+          $os_type    = 'windowsservercore'
+          $os_version = 'ltsc2019'
+          cd $name
+          $version    = $(select-string -Path dockerfile -Pattern "ENV POWERCLI_VERSION").ToString().split()[-1]
+          docker build -f dockerfile . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
       -
         name: build and push chocolatey
         shell: pwsh
         run: |
-          cd chocolatey
-          docker build -t chocolatey .
-          $version=$(select-string -Path Dockerfile -Pattern "ENV chocolateyVersion").ToString().split()[-1]
-          docker tag chocolatey jpatigny/chocolatey:$version
-          docker push jpatigny/chocolatey:$version
-          docker tag chocolatey jpatigny/chocolatey:latest
-          docker push jpatigny/chocolatey:latest
+          $name       = 'chocolatey'
+          $os_type    = 'windowsservercore'
+          $os_version = 'ltsc2019'
+          cd $name
+          $version    = $(select-string -Path dockerfile -Pattern "ENV chocolateyVersion").ToString().split()[-1]
+          docker build -f dockerfile . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
       -
         name: build and push prometheus
         shell: pwsh
         run: |
           $name = 'prometheus'
           $os_type    = 'nanoserver'
-          $os_version = '20h2'
+          $os_version = '1809'
           cd $name
           $version    = $(select-string -Path dockerfile.nanoserver-20h2 -Pattern "ENV PROMETHEUS_VERSION").ToString().split()[-1]
-          docker build -f dockerfile.nanoserver-20h2 . -t jpatigny/prometheus:$($version)-$($os_type)-$($os_version)
-          docker push jpatigny/prometheus:$($version)-$($os_type)-$($os_version)
+          docker build -f dockerfile.nanoserver-20h2 . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
       -
         name: build and push blackbox exporter
         shell: pwsh
         run: |
           $name = 'blackbox_exporter'
           $os_type    = 'nanoserver'
-          $os_version = '20h2'
+          $os_version = '1809'
           cd $name
           $version    = $(select-string -Path dockerfile.nanoserver-20h2 -Pattern "ENV BLACKBOX_VERSION").ToString().split()[-1]
           docker build -f dockerfile.nanoserver-20h2 . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
@@ -76,17 +76,17 @@ jobs:
           $name = 'windows_exporter'
           cd windows_exporter
           $os_type    = 'windowsservercore'
-          $os_version = '20h2'
+          $os_version = '1809'
           $version    = $(select-string -Path dockerfile -Pattern "ENV WINDOWS_EXPORTER_VERSION").ToString().split()[-1]
-          docker build -f dockerfile.nanoserver-20h2 . -t jpatigny/windows_exporter:$($version)-$($os)
-          docker push jpatigny/blackbox_exporter:$($version)-$($os)
+          docker build -f dockerfile . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
       -
         name: build and push alertmanager
         shell: pwsh
         run: |
           $name = 'alertmanager'
           $os_type    = 'nanoserver'
-          $os_version = '20h2'
+          $os_version = '1809'
           cd $name
           $version    = $(select-string -Path dockerfile.nanoserver-20h2 -Pattern "ENV ALERTMANAGER_VERSION").ToString().split()[-1]
           docker build -f dockerfile.nanoserver-20h2 . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)

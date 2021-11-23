@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/powershell:nanoserver-1809 as build
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ENV ALERTMANAGER_VERSION "0.23.0"
+
+LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
+
+RUN md c:\alertmanager-data ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/alertmanager/releases/download/v$($env:ALERTMANAGER_VERSION)/alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -outfile alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -Verbose ; \
+    Expand-Archive -Path alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -DestinationPath C:\ -Verbose ; \
+    mv alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64 C:\alertmanager -Verbose ; \
+    md C:\alertmanager\config ; \
+    mv C:\alertmanager\alertmanager.yml C:\alertmanager\config\alertmanager.yml
+
+USER       ContainerUser
+WORKDIR    C:/alertmanager-data
+EXPOSE     9093
+VOLUME     [ "C:/alertmanager-data" ]
+ENTRYPOINT [ "C:/alertmanager/alertmanager.exe" ]
+CMD        [ "--config.file=C:/alertmanager/config/alertmanager.yml" ]
