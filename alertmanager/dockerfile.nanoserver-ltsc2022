@@ -1,6 +1,6 @@
 ARG ostype=nanoserver
 ARG psversion=7.2.0
-ARG version=1809
+ARG version=ltsc2022
 
 FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
 

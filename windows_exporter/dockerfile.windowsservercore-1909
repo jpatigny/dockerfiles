@@ -1,6 +1,6 @@
 ARG ostype=windowsservercore
 ARG psversion=7.2.0
-ARG version=20h2
+ARG version=1909
 
 FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
 

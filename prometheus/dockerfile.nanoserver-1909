@@ -1,6 +1,8 @@
+ARG ostype=nanoserver
+ARG psversion=7.2.0
 ARG version=1909
 
-FROM mcr.microsoft.com/powershell:nanoserver-${version} as build
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -13,7 +15,7 @@ RUN md c:\temp ; \
     md C:\temp\prometheus\config ; \
     mv C:\temp\prometheus\prometheus.yml C:\temp\prometheus\config\prometheus.yml
 
-FROM mcr.microsoft.com/powershell:nanoserver-${version}
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 

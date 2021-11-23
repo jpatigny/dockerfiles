@@ -1,4 +1,8 @@
-FROM mcr.microsoft.com/powershell:nanoserver-20h2 as build
+ARG ostype=nanoserver
+ARG psversion=7.2.0
+ARG version=20h2
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -6,12 +10,18 @@ ENV ALERTMANAGER_VERSION "0.23.0"
 
 LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
 
-RUN md c:\alertmanager-data ; \
-    Invoke-Webrequest -uri https://github.com/prometheus/alertmanager/releases/download/v$($env:ALERTMANAGER_VERSION)/alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -outfile alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -Verbose ; \
-    Expand-Archive -Path alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -DestinationPath C:\ -Verbose ; \
-    mv alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64 C:\alertmanager -Verbose ; \
-    md C:\alertmanager\config ; \
-    mv C:\alertmanager\alertmanager.yml C:\alertmanager\config\alertmanager.yml
+RUN md C:\temp ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/alertmanager/releases/download/v$($env:ALERTMANAGER_VERSION)/alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -outfile C:\temp\alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip ; \
+    Expand-Archive -Path C:\temp\alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -DestinationPath C:\temp ; \
+    mv C:\temp\alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64 C:\temp\alertmanager ; \
+    md C:\temp\alertmanager\config ; \
+    mv C:\temp\alertmanager\alertmanager.yml C:\temp\alertmanager\config\alertmanager.yml
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
+
+RUN md c:\alertmanager-data
+
+COPY --from=build C:/temp/alertmanager C:/alertmanager
 
 USER       ContainerUser
 WORKDIR    C:/alertmanager-data

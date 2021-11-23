@@ -1,4 +1,8 @@
-FROM mcr.microsoft.com/powershell:7.2.0-windowsservercore-1809 as build
+ARG ostype=windowsservercore
+ARG psversion=7.2.0
+ARG version=ltsc2022
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 

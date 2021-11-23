@@ -1,17 +1,29 @@
-FROM mcr.microsoft.com/powershell:nanoserver-1809 as build
+ARG ostype=nanoserver
+ARG psversion=7.2.0
+ARG version=1809
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 ENV BLACKBOX_VERSION "0.19.0"
 
+RUN md C:\temp ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/blackbox_exporter/releases/download/v$($env:BLACKBOX_VERSION)/blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -outfile C:\temp\blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -Verbose ; \
+    Expand-Archive -Path C:\temp\blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -DestinationPath C:\temp -Verbose ; \
+    mv C:\temp\blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64 C:\temp\blackbox_exporter -Verbose ; \
+    md C:\temp\blackbox_exporter\config ; \
+    mv C:\temp\blackbox_exporter\blackbox.yml C:\temp\blackbox_exporter\config
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
 LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
 
-RUN md c:\blackbox_exporter-data ; \
-    Invoke-Webrequest -uri https://github.com/prometheus/blackbox_exporter/releases/download/v$($env:BLACKBOX_VERSION)/blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -outfile blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -Verbose ; \
-    Expand-Archive -Path blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64.zip -DestinationPath C:\ -Verbose ; \
-    mv blackbox_exporter-$($env:BLACKBOX_VERSION).windows-amd64 C:\blackbox_exporter -Verbose ; \
-    md C:\blackbox_exporter\config ; \
-    mv C:\blackbox_exporter\blackbox.yml C:\blackbox_exporter\config
+RUN md C:\blackbox_exporter-data
+
+COPY --from=build C:/temp/blackbox_exporter C:/blackbox_exporter
 
 USER       ContainerUser
 WORKDIR    C:/blackbox_exporter-data
@@ -19,4 +31,3 @@ EXPOSE     9115
 VOLUME     [ "C:/blackbox_exporter-data" ]
 ENTRYPOINT [ "C:/blackbox_exporter/blackbox_exporter.exe" ]
 CMD        [ "--config.file=C:/blackbox_exporter/config/blackbox.yml" ]
-
