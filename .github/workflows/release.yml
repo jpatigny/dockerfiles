@@ -240,3 +240,82 @@ jobs:
       #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV chocolateyVersion").ToString().split()[-1]
       #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
       #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+  push_grafana:
+    name: Push grafana Windows Docker image to Docker Hub
+    runs-on: windows-2019
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: nanoserver 1809
+        shell: pwsh
+        run: |
+          $name       = 'grafana'
+          $os_type    = 'nanoserver'
+          $os_version = '1809'
+          cd $name
+          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV grafana_VERSION").ToString().split()[-1]
+          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: nanoserver 1909
+      #   shell: pwsh
+      #   run: |
+      #     $name       = 'grafana'
+      #     $os_type    = 'nanoserver'
+      #     $os_version = '1909'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV grafana_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: nanoserver 2004
+      #   shell: pwsh
+      #   run: |
+      #     $name       = 'grafana'
+      #     $os_type    = 'nanoserver'
+      #     $os_version = '2004'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV grafana_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: nanoserver ltsc2022
+      #   shell: pwsh
+      #   run: |
+      #     $name       = 'grafana'
+      #     $os_type    = 'nanoserver'
+      #     $os_version = 'ltsc2022'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV grafana_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push powercli windowsservercore ltsc2019
+      #   shell: pwsh
+      #   run: |
+      #     $name       = 'powercli'
+      #     $os_type    = 'windowsservercore'
+      #     $os_version = 'ltsc2019'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV POWERCLI_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push chocolatey windowsservercore ltsc2019
+      #   shell: pwsh
+      #   run: |
+      #     $name       = 'chocolatey'
+      #     $os_type    = 'windowsservercore'
+      #     $os_version = 'ltsc2019'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV chocolateyVersion").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
