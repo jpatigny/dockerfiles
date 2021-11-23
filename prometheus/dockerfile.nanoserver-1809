@@ -8,11 +8,11 @@ LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
 
 USER ContainerAdministrator
 RUN md c:\prometheus-data ; \
-    Invoke-Webrequest -uri https://github.com/prometheus/prometheus/releases/download/v$($env:PROMETHEUS_VERSION)/prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip -outfile prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip ; \
-    Expand-Archive -Path prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip -DestinationPath C:\ ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/prometheus/releases/download/v$($env:PROMETHEUS_VERSION)/prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip -outfile "$($env:temp)\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip" ; \
+    Expand-Archive -Path "$($env:temp)\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip" -DestinationPath C:\ -Force ; \
     mv C:\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64 C:\prometheus ; \
     md C:\prometheus\config ; \
-    mv C:\prometheus\prometheus.yml C:\prometheus\config\prometheus.yml 
+    mv C:\prometheus\prometheus.yml C:\prometheus\config\prometheus.yml
 
 USER ContainerAdministrator
 RUN Install-Module -Name powershell-yaml -Scope AllUsers -SkipPublisherCheck -Force -Verbose

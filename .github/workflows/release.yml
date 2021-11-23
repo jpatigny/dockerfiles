@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  win_push_to_registry:
+  push_prometheus:
     name: Push Windows Docker image to Docker Hub
     runs-on: windows-2019
     steps:
@@ -17,77 +17,102 @@ jobs:
         name: Checkout code
         uses: actions/checkout@v2
       -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
         name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
-        name: build and push powerCLI
-        shell: pwsh
-        run: |
-          $name       = 'powercli'
-          $os_type    = 'windowsservercore'
-          $os_version = 'ltsc2019'
-          cd $name
-          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV POWERCLI_VERSION").ToString().split()[-1]
-          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-      -
-        name: build and push chocolatey
-        shell: pwsh
-        run: |
-          $name       = 'chocolatey'
-          $os_type    = 'windowsservercore'
-          $os_version = 'ltsc2019'
-          cd $name
-          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV chocolateyVersion").ToString().split()[-1]
-          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-      -
         name: build and push prometheus
         shell: pwsh
         run: |
-          $name = 'prometheus'
+          $name       = 'prometheus'
           $os_type    = 'nanoserver'
           $os_version = '1809'
           cd $name
-          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV PROMETHEUS_VERSION").ToString().split()[-1]
+          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "_VERSION").ToString().split()[-1]
           docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
           docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-      -
-        name: build and push blackbox exporter
-        shell: pwsh
-        run: |
-          $name = 'blackbox_exporter'
-          $os_type    = 'nanoserver'
-          $os_version = '1809'
-          cd $name
-          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV BLACKBOX_VERSION").ToString().split()[-1]
-          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-      -
-        name: build and push windows exporter
-        shell: pwsh
-        run: |
-          $name = 'windows_exporter'
-          cd windows_exporter
-          $os_type    = 'windowsservercore'
-          $os_version = '1809'
-          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV WINDOWS_EXPORTER_VERSION").ToString().split()[-1]
-          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-      -
-        name: build and push alertmanager
-        shell: pwsh
-        run: |
-          $name = 'alertmanager'
-          $os_type    = 'nanoserver'
-          $os_version = '1809'
-          cd $name
-          $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV ALERTMANAGER_VERSION").ToString().split()[-1]
-          docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+
+  # push_powercli:
+  #   name: Push Windows Docker image to Docker Hub
+  #   runs-on: windows-2019
+  #   steps:
+  #     -
+  #       name: Checkout code
+  #       uses: actions/checkout@v2
+  #     -
+  #       name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v1
+  #     -
+  #       name: Login to DockerHub
+  #       uses: docker/login-action@v1
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
+  #     -
+  #       name: build and push powerCLI
+  #       shell: pwsh
+  #       run: |
+  #         $name       = 'powercli'
+  #         $os_type    = 'windowsservercore'
+  #         $os_version = 'ltsc2019'
+  #         cd $name
+  #         $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV POWERCLI_VERSION").ToString().split()[-1]
+  #         docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+  #         docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push chocolatey
+      #   shell: pwsh
+      #   run: |
+      #     $name       = 'chocolatey'
+      #     $os_type    = 'windowsservercore'
+      #     $os_version = 'ltsc2019'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV chocolateyVersion").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push prometheus
+      #   shell: pwsh
+      #   run: |
+      #     $name = 'prometheus'
+      #     $os_type    = 'nanoserver'
+      #     $os_version = '1809'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV PROMETHEUS_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push blackbox exporter
+      #   shell: pwsh
+      #   run: |
+      #     $name = 'blackbox_exporter'
+      #     $os_type    = 'nanoserver'
+      #     $os_version = '1809'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV BLACKBOX_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push windows exporter
+      #   shell: pwsh
+      #   run: |
+      #     $name = 'windows_exporter'
+      #     cd windows_exporter
+      #     $os_type    = 'windowsservercore'
+      #     $os_version = '1809'
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV WINDOWS_EXPORTER_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      # -
+      #   name: build and push alertmanager
+      #   shell: pwsh
+      #   run: |
+      #     $name = 'alertmanager'
+      #     $os_type    = 'nanoserver'
+      #     $os_version = '1809'
+      #     cd $name
+      #     $version    = $(select-string -Path dockerfile.$($os_type)-$($os_version) -Pattern "ENV ALERTMANAGER_VERSION").ToString().split()[-1]
+      #     docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+      #     docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
