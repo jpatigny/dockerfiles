@@ -147,7 +147,7 @@ jobs:
           docker build -f dockerfile.$($os_type)-$($os_version) . -t jpatigny/$($name):$($version)-$($os_type)-$($os_version)
           docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
       -
-        name: windowsservercore ltsc2022
+        name: windows exporter windowsservercore ltsc2022
         shell: pwsh
         run: |
           $name       = 'windows_exporter'
