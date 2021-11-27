@@ -10,7 +10,7 @@ on:
 
 jobs:
   build_2019:
-    name: "[ Build and push ${{ matrix.version }} images ]"
+    name: "[ Build and push windows 2019 images ]"
     runs-on: windows-2019
     strategy:
       fail-fast: False
@@ -37,8 +37,8 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $version = $(select-string -Path dockerfile.$($env:type)-$($env:version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
-          docker build -f dockerfile.$($env:type)-$($env:version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
+          $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
+          docker build -f dockerfile.$($env:type)-$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
         env:
           application: ${{ matrix.application }}
@@ -73,8 +73,8 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $version = $(select-string -Path dockerfile.$($env:type)-$($env:version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
-          docker build -f dockerfile.$($env:type)-$($env:version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
+          $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
+          docker build -f dockerfile.$($env:type)-$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
         env:
           application: ${{ matrix.application }}
