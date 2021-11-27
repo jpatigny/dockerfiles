@@ -39,7 +39,7 @@ jobs:
           cd $env:application
           $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
           docker build -f dockerfile.$($env:type)-$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
           application: ${{ matrix.application }}
           type: ${{ matrix.os_type }}
@@ -75,7 +75,7 @@ jobs:
           cd $env:application
           $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
           docker build -f dockerfile.$($env:type)-$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
-          docker push jpatigny/$($name):$($version)-$($os_type)-$($os_version)
+          docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
           application: ${{ matrix.application }}
           type: ${{ matrix.os_type }}
