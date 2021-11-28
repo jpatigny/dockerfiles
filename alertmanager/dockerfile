@@ -1,0 +1,40 @@
+ARG ostype
+ARG psversion=7.2.0
+ARG version
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.authors"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.vendor"="Jeremie Patigny"
+LABEL "org.opencontainers.image.url"="https://github.com/jpatigny/dockerfiles/alertmanager"
+LABEL "org.opencontainers.image.documentation"="https://github.com/jpatigny/dockerfiles/tree/main/alertmanager"
+LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/alertmanager"
+LABEL "org.opencontainers.image.ref.name"="AlertManager ${ALERTMANAGER_VERSION}"
+LABEL "org.opencontainers.image.title"="AlertManager ${ALERTMANAGER_VERSION}"
+LABEL "org.opencontainers.image.description"="AlertManager ${ALERTMANAGER_VERSION}"
+
+ENV ALERTMANAGER_VERSION "0.23.0"
+
+RUN md C:\temp ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/alertmanager/releases/download/v$($env:ALERTMANAGER_VERSION)/alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -outfile C:\temp\alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip ; \
+    Expand-Archive -Path C:\temp\alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64.zip -DestinationPath C:\temp ; \
+    mv C:\temp\alertmanager-$($env:ALERTMANAGER_VERSION).windows-amd64 C:\temp\alertmanager ; \
+    md C:\temp\alertmanager\config ; \
+    mv C:\temp\alertmanager\alertmanager.yml C:\temp\alertmanager\config\alertmanager.yml
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
+
+RUN md c:\alertmanager-data
+
+COPY --from=build C:/temp/alertmanager C:/alertmanager
+
+USER       ContainerUser
+WORKDIR    C:/alertmanager-data
+EXPOSE     9093
+VOLUME     [ "C:/alertmanager-data" ]
+ENTRYPOINT [ "C:/alertmanager/alertmanager.exe" ]
+CMD        [ "--config.file=C:/alertmanager/config/alertmanager.yml" ]
+

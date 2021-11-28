@@ -1,0 +1,35 @@
+ARG ostype
+ARG psversion=7.2.0
+ARG version
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ENV PROMETHEUS_VERSION "2.31.1"
+
+RUN md c:\temp ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/prometheus/releases/download/v$($env:PROMETHEUS_VERSION)/prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip -outfile "C:\temp\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip" ; \
+    Expand-Archive -Path "C:\temp\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip" -DestinationPath C:\temp -Force ; \
+    mv C:\temp\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64 C:\temp\prometheus ; \
+    md C:\temp\prometheus\config ; \
+    mv C:\temp\prometheus\prometheus.yml C:\temp\prometheus\config\prometheus.yml
+
+FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
+
+USER ContainerAdministrator
+RUN md c:\prometheus-data ; \
+    Install-Module -Name powershell-yaml -Scope AllUsers -SkipPublisherCheck -Force
+
+COPY --from=build C:/temp/prometheus C:/prometheus
+
+USER       ContainerUser
+WORKDIR    C:/prometheus-data
+EXPOSE     9090
+VOLUME     [ "C:/prometheus-data" ]
+ENTRYPOINT [ "C:/prometheus/prometheus.exe" ]
+CMD        [ "--config.file=C:/prometheus/config/prometheus.yml","--storage.tsdb.path=C:/prometheus-data" ]

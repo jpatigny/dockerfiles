@@ -1,16 +1,17 @@
 name: Release
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    tags:
+      - '*'
 
   workflow_dispatch:
 
 jobs:
   build_2019:
-    name: "[ Build and push windows 2019 images ]"
+    name: "[ Build ]"
     runs-on: windows-2019
     strategy:
       fail-fast: False
@@ -38,7 +39,7 @@ jobs:
         run: |
           cd $env:application
           $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
-          docker build -f dockerfile.$($env:type)-$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
+          docker build --build-arg ostype=$($env:type) --build-arg version=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
           application: ${{ matrix.application }}
@@ -46,7 +47,7 @@ jobs:
           os_version: ${{ matrix.os_version }}
 
   build_2022:
-    name: "[ Build and push windows 2022 images ]"
+    name: "[ Build ]"
     runs-on: windows-2022
     strategy:
       fail-fast: False
@@ -74,7 +75,7 @@ jobs:
         run: |
           cd $env:application
           $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
-          docker build -f dockerfile.$($env:type)-$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
+          docker build --build-arg ostype=$($env:type) --build-arg version=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
           application: ${{ matrix.application }}

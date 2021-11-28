@@ -1,0 +1,22 @@
+ARG version
+
+FROM mcr.microsoft.com/windows/servercore:${version}
+
+ENV POWERCLI_VERSION 12.4.1.18769701
+
+LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.authors"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.vendor"="Jeremie Patigny"
+LABEL "org.opencontainers.image.url"="https://github.com/jpatigny/dockerfiles/powerCLI"
+LABEL "org.opencontainers.image.documentation"="https://github.com/jpatigny/dockerfiles/tree/main/powerCLI"
+LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/powerCLI"
+LABEL "org.opencontainers.image.ref.name"="powerCLI ${POWERCLI_VERSION}"
+LABEL "org.opencontainers.image.title"="powerCLI ${POWERCLI_VERSION}"
+LABEL "org.opencontainers.image.description"="powerCLI ${POWERCLI_VERSION}"
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.208 -Force ; \
+    Install-Module -Name VMware.PowerCLI -RequiredVersion $env:POWERCLI_VERSION -Force ; \
+    Import-Module VMware.PowerCli ; \
+    Set-PowerCLIConfiguration -Scope AllUsers -ParticipateInCeip $false -Confirm:$false
