@@ -23,6 +23,9 @@ jobs:
           - application: powercli
             os_version: ltsc2019
             os_type: windowsservercore
+          - application: chocolatey
+            os_version: ltsc2019
+            os_type: windowsservercore
     steps:
       -
         name: Checkout code
@@ -56,7 +59,10 @@ jobs:
         os_version:  ['ltsc2022']
         os_type: ['nanoserver']
         include:
-          - application: 'powercli'
+          - application: powercli
+            os_version: ltsc2022
+            os_type: windowsservercore
+          - application: chocolatey
             os_version: ltsc2022
             os_type: windowsservercore
     steps:
