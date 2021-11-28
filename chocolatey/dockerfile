@@ -4,8 +4,19 @@ FROM mcr.microsoft.com/windows/servercore:${version}
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV chocolateyVersion 0.10.15
+ENV CHOCO_VERSION "0.10.15"
+ENV chocolateyVersion ${CHOCO_VERSION}
 ENV chocolateyUseWindowsCompression false
+
+LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.authors"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.vendor"="Jeremie Patigny"
+LABEL "org.opencontainers.image.url"="https://github.com/jpatigny/dockerfiles/chocolatey"
+LABEL "org.opencontainers.image.documentation"="https://github.com/jpatigny/dockerfiles/tree/main/chocolatey"
+LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/chocolatey"
+LABEL "org.opencontainers.image.ref.name"="grafana ${CHOCO_VERSION}"
+LABEL "org.opencontainers.image.title"="grafana ${CHOCO_VERSION}"
+LABEL "org.opencontainers.image.description"="grafana ${CHOCO_VERSION}"
 
 RUN mkdir $env:ProgramFiles\WindowsPowerShell\Modules\ChocoHelpers ; \
     iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); \
