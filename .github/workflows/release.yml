@@ -41,7 +41,7 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
+          $version = $(select-string -Path dockerfile -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
           docker build --build-arg ostype=$($env:type) --build-arg version=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
@@ -80,7 +80,7 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $version = $(select-string -Path dockerfile.$($env:type)-$($env:os_version) -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
+          $version = $(select-string -Path dockerfile -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
           docker build --build-arg ostype=$($env:type) --build-arg version=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
