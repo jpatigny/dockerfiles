@@ -1,5 +1,4 @@
-﻿FROM python:3.10-windowsservercore
-
+﻿FROM python:3.10-windowsservercore-1809
 
 RUN pip install --no-cache-dir -U checkov
 
