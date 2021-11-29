@@ -26,6 +26,9 @@ jobs:
           - application: chocolatey
             os_version: ltsc2019
             os_type: windowsservercore
+          - application: checkov
+            os_version: 1809
+            os_type: windowsservercore            
     steps:
       -
         name: Checkout code
@@ -65,6 +68,9 @@ jobs:
           - application: chocolatey
             os_version: ltsc2022
             os_type: windowsservercore
+          - application: checkov
+            os_version: ltsc2022
+            os_type: windowsservercore  
     steps:
       -
         name: Checkout code

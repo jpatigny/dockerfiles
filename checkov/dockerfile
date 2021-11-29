@@ -1,0 +1,9 @@
+﻿ARG ostype
+ARG python_version=3.10
+ARG version
+
+FROM python:${python_version}-${ostype}-${version}
+
+RUN pip install --no-cache-dir -U checkov
+
+ENTRYPOINT [ "checkov.exe" ]
