@@ -13,9 +13,9 @@ LABEL "org.opencontainers.image.vendor"="Jeremie Patigny"
 LABEL "org.opencontainers.image.url"="https://github.com/jpatigny/dockerfiles/chocolatey"
 LABEL "org.opencontainers.image.documentation"="https://github.com/jpatigny/dockerfiles/tree/main/chocolatey"
 LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/chocolatey"
-LABEL "org.opencontainers.image.ref.name"="grafana ${CHOCO_VERSION}"
-LABEL "org.opencontainers.image.title"="grafana ${CHOCO_VERSION}"
-LABEL "org.opencontainers.image.description"="grafana ${CHOCO_VERSION}"
+LABEL "org.opencontainers.image.ref.name"="chocolatey ${CHOCO_VERSION}"
+LABEL "org.opencontainers.image.title"="chocolatey ${CHOCO_VERSION}"
+LABEL "org.opencontainers.image.description"="chocolatey ${CHOCO_VERSION}"
 
 RUN mkdir $env:ProgramFiles\WindowsPowerShell\Modules\ChocoHelpers ; \
     $env:chocolateyVersion = $env:CHOCO_VERSION ; \
