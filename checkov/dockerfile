@@ -4,6 +4,21 @@ ARG version
 
 FROM python:${python_version}-${ostype}-${version}
 
-RUN pip install --no-cache-dir -U checkov
+ENV CHECKOV_VERSION 2.0.614
 
-ENTRYPOINT [ "checkov.exe" ]
+LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.authors"="Jeremie Patigny <jpatigny@gmail.com>"
+LABEL "org.opencontainers.image.vendor"="Jeremie Patigny"
+LABEL "org.opencontainers.image.url"="https://github.com/jpatigny/dockerfiles/checkov"
+LABEL "org.opencontainers.image.documentation"="https://github.com/jpatigny/dockerfiles/tree/main/checkov"
+LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/checkov"
+LABEL "org.opencontainers.image.ref.name"="checkov ${CHECKOV_VERSION}"
+LABEL "org.opencontainers.image.title"="checkov ${CHECKOV_VERSION}"
+LABEL "org.opencontainers.image.description"="checkov ${CHECKOV_VERSION}"
+
+RUN python.exe -m pip install --upgrade pip ; \
+    pip3 install --upgrade setuptools ; \
+    pip3 install checkov==${env:CHECKOV_VERSION}
+
+ENTRYPOINT [ "powershell.exe" ]
+CMD [ "checkov","--help" ]
