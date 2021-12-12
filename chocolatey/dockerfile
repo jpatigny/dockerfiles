@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/windows/servercore:${version}
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV CHOCO_VERSION "0.10.15"
+ENV CHOCO_VERSION "0.11.3"
 ENV chocolateyUseWindowsCompression false
 
 LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
