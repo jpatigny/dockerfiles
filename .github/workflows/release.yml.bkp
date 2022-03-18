@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        application: ['prometheus','blackbox_exporter','alertmanager','grafana']
+        application: ['prometheus','blackbox_exporter','alertmanager','grafana','gitlab-runner-helper']
         os_version:  ['1809']
         os_type: ['nanoserver']
         include:
@@ -28,7 +28,7 @@ jobs:
             os_type: windowsservercore
           - application: checkov
             os_version: 1809
-            os_type: windowsservercore            
+            os_type: windowsservercore
     steps:
       -
         name: Checkout code
@@ -45,6 +45,10 @@ jobs:
         run: |
           cd $env:application
           $version = $(select-string -Path dockerfile -Pattern 'ENV (.+)_VERSION').ToString().split()[-1]
+          $revision = $(select-string -Path dockerfile -Pattern 'ENV (.+)_REVISION').ToString().split()[-1]
+          if ($revision) {
+            $version = $revision
+          }
           docker build --build-arg ostype=$($env:type) --build-arg version=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
           docker push jpatigny/$($env:application):$($version)-$($env:type)-$($env:os_version)
         env:
@@ -58,7 +62,7 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        application: ['prometheus','blackbox_exporter','alertmanager','grafana']
+        application: ['prometheus','blackbox_exporter','alertmanager','grafana','gitlab-runner-helper']
         os_version:  ['ltsc2022']
         os_type: ['nanoserver']
         include:

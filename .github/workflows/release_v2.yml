@@ -1,0 +1,52 @@
+name: Release
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    tags:
+      - '*'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build"
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        package: ${{ steps.tests.get_packages.stdout }}
+        dockerfile: [dockerfile.nanoserver]
+        os_type: [nanoserver]
+        os_version: [1809, ltsc2022]
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v2
+    
+      - 
+        name: Get all packages
+        shell: powershell
+        id: get_packages
+        run: |
+          (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
+    
+      - 
+        name: "Check dockerfile.nano existence"
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "${{ matrix.package }}/${{ matrix.dockerfile }}"
+      - 
+        uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build & push Docker image
+        if: steps.check_files.outputs.files_exists == 'true'
+        with:
+          image: $GITHUB_REPOSITORY_OWNER/${{ matrix.package }}
+          buildArgs: OS_TYPE=${{ matrix.os_type }}, OS_VERSION=${{ matrix.os_version }}
+          tags: ${{ matrix.os_type }}-${{ matrix.os_version }}
+          registry: docker.io
+          dockerfile: ${{ matrix.package }}/${{ matrix.dockerfile }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
