@@ -24,7 +24,7 @@ jobs:
         shell: pwsh
         run: |
           tree $pwd
-          $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
+          $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object
           $packages
           Write-Host "::set-output name=packages::$packages"
 
