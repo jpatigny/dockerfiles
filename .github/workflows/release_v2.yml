@@ -37,16 +37,16 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: "${{ matrix.package }}/${{ matrix.dockerfile }}"
-      - 
-        uses: mr-smithers-excellent/docker-build-push@v5
-        name: Build & push Docker image
-        if: steps.check_files.outputs.files_exists == 'true'
-        with:
-          image: $GITHUB_REPOSITORY_OWNER/${{ matrix.package }}
-          buildArgs: OS_TYPE=${{ matrix.os_type }}, OS_VERSION=${{ matrix.os_version }}
-          tags: ${{ matrix.os_type }}-${{ matrix.os_version }}
-          registry: docker.io
-          dockerfile: ${{ matrix.package }}/${{ matrix.dockerfile }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      # - 
+      #   uses: mr-smithers-excellent/docker-build-push@v5
+      #   name: Build & push Docker image
+      #   if: steps.check_files.outputs.files_exists == 'true'
+      #   with:
+      #     image: $GITHUB_REPOSITORY_OWNER/${{ matrix.package }}
+      #     buildArgs: OS_TYPE=${{ matrix.os_type }}, OS_VERSION=${{ matrix.os_version }}
+      #     tags: ${{ matrix.os_type }}-${{ matrix.os_version }}
+      #     registry: docker.io
+      #     dockerfile: ${{ matrix.package }}/${{ matrix.dockerfile }}
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
 
