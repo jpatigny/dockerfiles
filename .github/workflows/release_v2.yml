@@ -11,15 +11,16 @@ on:
 
 jobs:
   get-package:
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
     name: "Get package list"
     outputs:
       package_list: ${{ steps.list.outputs.packages }}
     steps:
       - id: list
-        shell: pwsh
+        # shell: pwsh
         run: |
           $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
+          $packages
           Write-Host "::set-output name=packages::$packages"
 
   build:
