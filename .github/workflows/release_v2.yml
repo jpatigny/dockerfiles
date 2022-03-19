@@ -19,7 +19,7 @@ jobs:
       - id: list
         shell: pwsh
         run: |
-          dir
+          Get-process
           $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
           $packages
           Write-Host "::set-output name=packages::$packages"
