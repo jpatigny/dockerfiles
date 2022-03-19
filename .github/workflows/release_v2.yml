@@ -9,24 +9,24 @@ on:
 
   workflow_dispatch:
 
-jobs:
-  get-all-packages:
-    runs-on: ubuntu-latest
-    name: "Get package list"
-    outputs:
-      packages: join(${{ steps.list.outputs.packages }}, 
-    steps:
-      -
-        name: Checkout code
-        uses: actions/checkout@v2
+ jobs:
+  #   get-all-packages:
+  #     runs-on: ubuntu-latest
+  #     name: "Get package list"
+  #     outputs:
+  #       packages: join(${{ steps.list.outputs.packages }}, 
+  #     steps:
+  #       -
+  #         name: Checkout code
+  #         uses: actions/checkout@v2
 
-      - id: list
-        shell: pwsh
-        run: |
-          tree $pwd
-          $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object
-          $packages
-          Write-Host "::set-output name=packages::$packages"
+  #       - id: list
+  #         shell: pwsh
+  #         run: |
+  #           tree $pwd
+  #           $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object
+  #           $packages
+  #           Write-Host "::set-output name=packages::$packages"
 
   get-changed-packages:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
       - id: list
         shell: pwsh
         run: |
-          $files   = $(git diff --name-only HEAD~1)
+          $files   = $(git diff --name-only main)
           $folders = $files -replace "\/[^\/]+$", "" | ? { $_ -notmatch '.github' }
           Write-Host "::set-output name=packages::$folders"
 
