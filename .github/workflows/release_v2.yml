@@ -14,16 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     name: "Get package list"
     outputs:
-      pkg-list: ${{ steps.list.outputs.list.stdout }}
+      package_list: ${{ steps.list.outputs.packages }}
     steps:
       - id: list
         shell: pwsh
         run: |
-          # (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
-          Get-ChildItem -Directory
+          $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
+          Write-Host "::set-output name=packages::$packages"
 
   build:
     needs: get-package
+    if: needs.get-package.outputs.package_list == 'True'
     name: "Build"
     runs-on: windows-2022
     strategy:
