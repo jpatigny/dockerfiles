@@ -10,11 +10,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  get-package:
+  get-all-packages:
     runs-on: ubuntu-latest
     name: "Get package list"
     outputs:
-      packages: ${{ steps.list.outputs.packages }}
+      packages: join(${{ steps.list.outputs.packages }}, 
     steps:
       -
         name: Checkout code
@@ -28,13 +28,30 @@ jobs:
           $packages
           Write-Host "::set-output name=packages::$packages"
 
+  get-changed-packages:
+    runs-on: ubuntu-latest
+    name: "Get updated package list"
+    outputs:
+      packages: ${{ steps.list.outputs.packages }}
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v2
+
+      - id: list
+        shell: pwsh
+        run: |
+          $files   = $(git diff --name-only HEAD~1)
+          $folders = $files -replace "\/[^\/]+$", "" | ? { $_ -notmatch '.github' }
+          Write-Host "::set-output name=packages::$folders"
+
   build:
-    needs: get-package
+    needs: get-all-packages
     name: "Build"
     runs-on: windows-2022
     strategy:
       matrix:
-        package: ${{ needs.get-package.outputs.packages }}
+        package: ${{ needs.get-changed-packages.outputs.packages }}
         dockerfile: [dockerfile.nanoserver]
         os_type: [nanoserver]
         os_version: [1809, ltsc2022]
