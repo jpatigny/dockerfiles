@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Get package list"
     outputs:
-      package_list: ${{ steps.list.outputs.packages }}
+      packages: ${{ steps.list.outputs.packages }}
     steps:
       -
         name: Checkout code
@@ -30,12 +30,11 @@ jobs:
 
   build:
     needs: get-package
-    if: needs.get-package.outputs.package_list == 'True'
     name: "Build"
     runs-on: windows-2022
     strategy:
       matrix:
-        package: ${{ needs.get-package.outputs.pkg-list }}
+        package: ${{ needs.get-package.outputs.packages }}
         dockerfile: [dockerfile.nanoserver]
         os_type: [nanoserver]
         os_version: [1809, ltsc2022]
