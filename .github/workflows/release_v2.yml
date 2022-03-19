@@ -17,8 +17,9 @@ jobs:
       pkg-list: ${{ steps.list.outputs.list.stdout }}
     steps:
       - id: list
+        shell: pwsh
         run: |
-          Get-ChildItem -Directory -Exclude '.github' | Select Name | Sort-Object | select -First 1
+            (Get-ChildItem -Directory -Exclude '.github').Name| Select Name | Sort-Object | select -First 1
 
   build:
     needs: get-package
