@@ -46,7 +46,7 @@ jobs:
           Write-Host "::set-output name=packages::$folders"
 
   build:
-    needs: get-all-packages
+    needs: get-changed-packages
     name: "Build"
     runs-on: windows-2022
     strategy:
