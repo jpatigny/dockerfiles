@@ -17,7 +17,7 @@ jobs:
       package_list: ${{ steps.list.outputs.packages }}
     steps:
       - id: list
-        # shell: pwsh
+        shell: pwsh
         run: |
           dir
           $packages = (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
