@@ -18,7 +18,7 @@ jobs:
     steps:
       - id: list
         run: |
-            (Get-ChildItem -Directory -Exclude '.github').Name | Sort-Object | select -First 1
+          Get-ChildItem -Directory -Exclude '.github' | Select Name | Sort-Object | select -First 1
 
   build:
     needs: get-package
