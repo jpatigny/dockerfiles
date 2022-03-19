@@ -16,6 +16,10 @@ jobs:
     outputs:
       package_list: ${{ steps.list.outputs.packages }}
     steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v2
+
       - id: list
         shell: pwsh
         run: |
