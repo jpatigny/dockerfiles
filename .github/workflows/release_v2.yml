@@ -9,7 +9,7 @@ on:
 
   workflow_dispatch:
 
- jobs:
+jobs:
   #   get-all-packages:
   #     runs-on: ubuntu-latest
   #     name: "Get package list"
