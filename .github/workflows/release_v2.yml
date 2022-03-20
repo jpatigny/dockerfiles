@@ -28,32 +28,23 @@ jobs:
   #           $packages
   #           Write-Host "::set-output name=packages::$packages"
 
-  get-changed-packages:
-    runs-on: ubuntu-latest
-    name: "Get updated package list"
-    outputs:
-      packages: ${{ steps.list.outputs.packages }}
+  build:
+    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    name: Test changed-files
     steps:
-      -
-        name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
-          fetch-depth: 2
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - id: list
-        shell: pwsh
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v18.3
+
+      - name: List all changed files
         run: |
-          $files   = $(git diff --name-only HEAD)
-          $folders = $files -replace "\/[^\/]+$", "" | ? { $_ -notmatch '.github' } | ConvertTo-Json
-          Write-Host "::set-output name=packages::$folders"
-  my_echo:
-    runs-on: ubuntu-latest
-    needs:
-      - get-changed-packages
-    steps:
-      - name: Echo previous outputs
-        shell: pwsh
-        run: echo "${{ toJSON(needs.get-changed-packages.outputs) }}"
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
 
   # build:
   #   needs: get-changed-packages
