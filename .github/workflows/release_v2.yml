@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Get updated package list"
     outputs:
-      packages: ${{ steps.list.outputs.packages }}
+      packages: koin(${{ steps.list.outputs.packages }}, ',')
     steps:
       -
         name: Checkout code
@@ -41,31 +41,39 @@ jobs:
       - id: list
         shell: pwsh
         run: |
-          $files   = $(git diff --name-only main)
-          $folders = $files -replace "\/[^\/]+$", "" | ? { $_ -notmatch '.github' }
+          $files   = $(git diff --name-only HEAD)
+          $folders = $files -replace "\/[^\/]+$", "" | ? { $_ -notmatch '.github' } | ConvertTo-Json
           Write-Host "::set-output name=packages::$folders"
-
-  build:
-    needs: get-changed-packages
-    name: "Build"
-    runs-on: windows-2022
-    strategy:
-      matrix:
-        package: ${{ needs.get-changed-packages.outputs.packages }}
-        dockerfile: [dockerfile.nanoserver]
-        os_type: [nanoserver]
-        os_version: [1809, ltsc2022]
+  my_echo:
+    runs-on: ubuntu-latest
+    needs:
+      - get-changed-packages
     steps:
-      -
-        name: Checkout code
-        uses: actions/checkout@v2
+      - name: Echo previous outputs
+        shell: pwsh
+        run: echo "${{ toJSON(needs.get-changed-packages.outputs) }}"
+
+  # build:
+  #   needs: get-changed-packages
+  #   name: "Build"
+  #   runs-on: windows-2022
+  #   strategy:
+  #     matrix:
+  #       package: {{ needs.get-changed-packages.outputs.packages }}
+  #       dockerfile: [dockerfile.nanoserver]
+  #       os_type: [nanoserver]
+  #       os_version: [1809, ltsc2022]
+  #   steps:
+  #     -
+  #       name: Checkout code
+  #       uses: actions/checkout@v2
     
-      - 
-        name: "Check dockerfile.nano existence"
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "${{ matrix.package }}/${{ matrix.dockerfile }}"
+  #     - 
+  #       name: "Check dockerfile.nano existence"
+  #       id: check_files
+  #       uses: andstor/file-existence-action@v1
+  #       with:
+  #         files: "${{ matrix.package }}/${{ matrix.dockerfile }}"
       # - 
       #   uses: mr-smithers-excellent/docker-build-push@v5
       #   name: Build & push Docker image
