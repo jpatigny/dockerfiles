@@ -61,7 +61,7 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          docker build --isolation=hyperv --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t $($env:GITHUB_REPOSITORY_OWNER)/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)
+          docker build --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t $($env:GITHUB_REPOSITORY_OWNER)/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)
           docker push $($env:GITHUB_REPOSITORY_OWNER)/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)
         env:
           application: ${{ matrix.application }}
