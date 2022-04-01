@@ -73,7 +73,7 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
+          $build = "docker build --isolation=hyperv -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
           $push  = "docker push jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
           Write-Host "+ Build command: $build"
           Write-Host "+ Push command: $push"
