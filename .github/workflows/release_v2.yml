@@ -23,8 +23,8 @@ jobs:
         include:
           - application: alertmanager
             app_version: 0.24.0
-            os_version: ['ltsc2022','1809']
-            os_type: ['nanoserver','windowsservercore']
+            os_version: ltsc2022
+            os_type: nanoserver
           # - application: blackbox_exporter
           #   os_version: ['ltsc2022','1809']
           #   os_type: ['nanoserver','windowsservercore']
