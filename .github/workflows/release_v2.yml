@@ -10,12 +10,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_2022:
-    name: "[ Build 2022 images ]"
-    runs-on: windows-2022
+  build:
+    name: "[ Build images ]"
+    runs-on: ${{ matrix.runner_version }}
     strategy:
       fail-fast: False
       matrix:
+        runner_version: ['windows-2019','windows-2022']
         include:
           - application: alertmanager
             app_version: 0.24.0
@@ -80,74 +81,4 @@ jobs:
           build_file: ${{ matrix.build_file }}
           os_type: ${{ matrix.os_type }}
           os_version: ${{ matrix.os_version }}
-  
-  build_2019:
-    name: "[ Build 2019 images ]"
-    runs-on: windows-2019
-    strategy:
-      fail-fast: False
-      matrix:
-        include:
-          - application: alertmanager
-            app_version: 0.24.0
-            build_file: dockerfile.nanoserver
-            os_version: '1809'
-            os_type: nanoserver
-          - application: alertmanager
-            app_version: 0.24.0
-            build_file: dockerfile
-            os_version: '1809'
-            os_type: windowsservercore
-          # - application: blackbox_exporter
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: checkov
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: chocolatey
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: windowsservercore
-          # - application: grafana
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: nexus
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: powercli
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: windowsservercore
-          # - application: prometheus
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-    steps:
-      -
-        name: Checkout code
-        uses: actions/checkout@v2
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: ${{ matrix.application }} ${{ matrix.app_version }} ${{ matrix.os_type }} ${{ matrix.os_version }}
-        shell: pwsh
-        run: |
-          cd $env:application
-          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
-          $push  = "docker push jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
-          Write-Host "+ Build command: $build"
-          Write-Host "+ Push command: $push"
-          Write-Host "+ Starting build..."
-          Invoke-Expression $build
-          if ($LASTEXITCODE -ne 0) {
-            Throw "Build failed !"
-          }
-          Write-Host "Pushing image to dockerhub..."
-          Invoke-Expression $push
-        env:
-          application: ${{ matrix.application }}
-          app_version: ${{ matrix.app_version }}
-          build_file: ${{ matrix.build_file }}
-          os_type: ${{ matrix.os_type }}
-          os_version: ${{ matrix.os_version }}
+
