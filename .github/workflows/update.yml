@@ -2,7 +2,7 @@
 name: Updates
 on:
   schedule:
-    - cron:  '00 12 * * *'
+    - cron:  '55 15 * * *'
 
 jobs:
   check_updates:
