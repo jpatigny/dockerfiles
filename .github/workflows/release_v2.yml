@@ -16,16 +16,17 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        application: [""]
-        app_version: [""]
-        os_version:  [""]
-        os_type: [""]
         include:
           - application: alertmanager
             app_version: 0.24.0
             build_file: dockerfile.nanoserver
-            os_version: ltsc2022
+            os_version: ['ltsc2022','1809']
             os_type: nanoserver
+          - application: alertmanager
+            app_version: 0.24.0
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
           # - application: blackbox_exporter
           #   os_version: ['ltsc2022','1809']
           #   os_type: ['nanoserver','windowsservercore']
