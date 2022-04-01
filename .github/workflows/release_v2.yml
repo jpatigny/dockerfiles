@@ -20,7 +20,17 @@ jobs:
           - application: alertmanager
             app_version: 0.24.0
             build_file: dockerfile.nanoserver
-            os_version: ['ltsc2022','1809']
+            os_version: '1809'
+            os_type: nanoserver
+          - application: alertmanager
+            app_version: 0.24.0
+            build_file: dockerfile
+            os_version: '1809'
+            os_type: windowsservercore
+          - application: alertmanager
+            app_version: 0.24.0
+            build_file: dockerfile.nanoserver
+            os_version: ltsc2022
             os_type: nanoserver
           - application: alertmanager
             app_version: 0.24.0

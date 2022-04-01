@@ -4,7 +4,7 @@ ARG PS_VERSION=7.2.2
 
 FROM mcr.microsoft.com/powershell:${PS_VERSION}-${OS_TYPE}-${OS_VERSION} as build
 
-ARG VERSION
+ARG VERSION=0.24.0
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 

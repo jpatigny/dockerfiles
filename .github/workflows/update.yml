@@ -1,0 +1,24 @@
+
+name: Updates
+on:
+  schedule:
+    - cron:  '00 12 * * *'
+
+jobs:
+  check_updates:
+    name: "Check Update"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: False
+      matrix:
+        application: ['alertmanager']
+    steps:
+      - uses: actions/checkout@v2
+      -
+        name: "check update for ${{ matrix.application }}"
+        shell: pwsh
+        run: |
+          cd $env:application
+          if (Test-Path update.ps1) { .\update.ps1 }
+        env:
+          application: ${{ matrix.application }}
