@@ -23,6 +23,7 @@ jobs:
         include:
           - application: alertmanager
             app_version: 0.24.0
+            build_file: dockerfile.nanoserver 
             os_version: ltsc2022
             os_type: nanoserver
           # - application: blackbox_exporter
@@ -61,11 +62,22 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          docker build --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t $($env:GITHUB_REPOSITORY_OWNER)/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)
-          docker push $($env:GITHUB_REPOSITORY_OWNER)/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)
+          build_file: ${{ matrix.build_file }}
+          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
+          $push  = "docker push jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
+          Write-Host "+ Build command: $build"
+          Write-Host "+ Push command: $push"
+          Write-Host "+ Starting build..."
+          Invoke-Expression $build
+          if ($LASTEXITCODE -ne 0) {
+            Throw "Build failed !"
+          }
+          Write-Host "Pushing image to dockerhub..."
+          Invoke-Expression $push
         env:
           application: ${{ matrix.application }}
           app_version: ${{ matrix.app_version }}
+          build_file: ${{ matrix.build_file }}
           os_type: ${{ matrix.os_type }}
           os_version: ${{ matrix.os_version }}
 
