@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 # variables
 $github_repo   = 'prometheus'
 $application   = 'alertmanager'
-$dockerfiles   = 'dockerfile','dockerfile.nanoserver'
+$dockerfiles   = 'dockerfile'
 $regex_version = 'ARG VERSION=(.+)$'
 
 # Retrieve latest release from github
