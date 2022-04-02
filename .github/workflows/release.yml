@@ -18,22 +18,33 @@ jobs:
       matrix:
         include:
           - application: alertmanager
-            app_version: 0.24.0
             build_file: dockerfile.nanoserver
             os_version: ltsc2022
             os_type: nanoserver
           - application: alertmanager
-            app_version: 0.24.0
             build_file: dockerfile
             os_version: ltsc2022
             os_type: windowsservercore
-          # - application: blackbox_exporter
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: checkov
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: chocolatey
+          - application: blackbox_exporter
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: nanoserver
+          - application: blackbox_exporter
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
+          - application: checkov
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
+          - application: prometheus
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: nanoserver
+          - application: prometheus
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
           #   os_version: ['ltsc2022','1809']
           #   os_type: windowsservercore
           # - application: grafana
@@ -45,9 +56,6 @@ jobs:
           # - application: powercli
           #   os_version: ['ltsc2022','1809']
           #   os_type: windowsservercore
-          # - application: prometheus
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
     steps:
       -
         name: Checkout code
@@ -59,12 +67,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
-        name: ${{ matrix.application }} ${{ matrix.app_version }} ${{ matrix.os_type }} ${{ matrix.os_version }}
+        name: ${{ matrix.application }} ${{ matrix.os_type }} ${{ matrix.os_version }}
         shell: pwsh
         run: |
           cd $env:application
-          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
-          $push  = "docker push jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
+          $version = $(select-string -Path dockerfile -Pattern 'ARG VERSION').ToString().split('=')[-1]
+          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+          $push  = "docker push jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
           Write-Host "+ Build command: $build"
           Write-Host "+ Push command: $push"
           Write-Host "+ Starting build..."
@@ -76,7 +85,6 @@ jobs:
           Invoke-Expression $push
         env:
           application: ${{ matrix.application }}
-          app_version: ${{ matrix.app_version }}
           build_file: ${{ matrix.build_file }}
           os_type: ${{ matrix.os_type }}
           os_version: ${{ matrix.os_version }}
@@ -89,13 +97,17 @@ jobs:
       matrix:
         include:
           - application: alertmanager
-            app_version: 0.24.0
             build_file: dockerfile.nanoserver
             os_version: '1809'
             os_type: nanoserver
-          # - application: blackbox_exporter
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
+          - application: blackbox_exporter
+            build_file: dockerfile
+            os_version: '1809'
+            os_type: nanoserver
+          - application: prometheus
+            build_file: dockerfile
+            os_version: '1809'
+            os_type: nanoserver
           # - application: checkov
           #   os_version: ['ltsc2022','1809']
           #   os_type: ['nanoserver','windowsservercore']
@@ -129,8 +141,9 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) --build-arg VERSION=$($env:app_version) . -t jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
-          $push  = "docker push jpatigny/$($env:application):$($env:app_version)-$($env:os_type)-$($env:os_version)"
+          $version = $(select-string -Path dockerfile -Pattern 'ARG VERSION').ToString().split('=')[-1]
+          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+          $push  = "docker push jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
           Write-Host "+ Build command: $build"
           Write-Host "+ Push command: $push"
           Write-Host "+ Starting build..."
@@ -142,7 +155,6 @@ jobs:
           Invoke-Expression $push
         env:
           application: ${{ matrix.application }}
-          app_version: ${{ matrix.app_version }}
           build_file: ${{ matrix.build_file }}
           os_type: ${{ matrix.os_type }}
           os_version: ${{ matrix.os_version }}

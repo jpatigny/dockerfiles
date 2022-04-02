@@ -1,17 +1,16 @@
-ARG ostype
-ARG psversion=7.2.0
-ARG version
+ARG OS_TYPE
+ARG OS_VERSION
 
-FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
+FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV PROMETHEUS_VERSION "2.31.1"
+ARG VERSION=2.31.1
 
 RUN md c:\temp ; \
-    Invoke-Webrequest -uri https://github.com/prometheus/prometheus/releases/download/v$($env:PROMETHEUS_VERSION)/prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip -outfile "C:\temp\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip" ; \
-    Expand-Archive -Path "C:\temp\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64.zip" -DestinationPath C:\temp -Force ; \
-    mv C:\temp\prometheus-$($env:PROMETHEUS_VERSION).windows-amd64 C:\temp\prometheus ; \
+    Invoke-Webrequest -uri https://github.com/prometheus/prometheus/releases/download/v$($env:VERSION)/prometheus-$($env:VERSION).windows-amd64.zip -outfile "C:\temp\prometheus-$($env:VERSION).windows-amd64.zip" ; \
+    Expand-Archive -Path "C:\temp\prometheus-$($env:VERSION).windows-amd64.zip" -DestinationPath C:\temp -Force ; \
+    mv C:\temp\prometheus-$($env:VERSION).windows-amd64 C:\temp\prometheus ; \
     md C:\temp\prometheus\config ; \
     mv C:\temp\prometheus\prometheus.yml C:\temp\prometheus\config\prometheus.yml
 

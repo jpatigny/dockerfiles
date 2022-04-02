@@ -1,16 +1,13 @@
-ARG ostype
-ARG psversion=7.2.0
-ARG version
+FROM chocolatey/choco:latest-windows
 
-FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+ENV VERSION "3.38.0.01"
 
-ENV NEXUS_VERSION "0.16.0"
 
-LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
 
-RUN iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+RUN choco install -y pwsh ; \
+    choco install -y nexus-repository--version $env:version
 
 RUN 
 

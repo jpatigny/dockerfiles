@@ -5,8 +5,8 @@ $ErrorActionPreference = 'Stop'
 
 # variables
 $github_repo   = 'prometheus'
-$application   = 'alertmanager'
-$dockerfiles   = 'dockerfile','dockerfile.nanoserver'
+$application   = 'blackbox_exporter'
+$dockerfiles   = 'dockerfile'
 $regex_version = 'ARG VERSION=(.+)$'
 
 # Retrieve latest release from github
@@ -25,23 +25,25 @@ git config --global user.email 'jpatigny@users.noreply.github.com'
 $changes = $false
 
 foreach ($file in $dockerfiles) {
-  [Version]$CurrentVersion = Get-Content $file | Select-String $regex_version | ForEach-Object { $_.Matches[0].Groups[1].Value }
-  Write-Host "Current version found in $($file): $CurrentVersion"
+  if (Test-Path $file) {
+    [Version]$CurrentVersion = Get-Content $file | Select-String $regex_version | ForEach-Object { $_.Matches[0].Groups[1].Value }
+    Write-Host "Current version found in $($file): $CurrentVersion"
+    
+    if ($LastVersion -gt $CurrentVersion) {
+      Write-Host "A new release version has been found for $application : $LastVersion"
   
-  if ($LastVersion -gt $CurrentVersion) {
-    Write-Host "A new release version has been found for $application : $LastVersion"
-
-    # Updating dockerfile
-    Get-ChildItem -Path $file | ForEach-Object {
-        (Get-Content $_.FullName) -replace $CurrentVersion,$LastVersion | Set-Content $_.FullName -Verbose
+      # Updating dockerfile
+      Get-ChildItem -Path $file | ForEach-Object {
+          (Get-Content $_.FullName) -replace $CurrentVersion,$LastVersion | Set-Content $_.FullName -Verbose
+      }
+  
+      # commit and push
+      git add $file
+      $changes = $true
     }
-
-    # commit and push
-    git add $file
-    $changes = $true
-  }
-  else {
-      Write-Host "Current version is already latest..."
+    else {
+        Write-Host "Current version is already latest..."
+    }
   }
 }
 
