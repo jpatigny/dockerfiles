@@ -37,6 +37,7 @@ foreach ($file in $dockerfiles) {
     }
 
     # commit and push
+    git pull
     git add $file
     $changes = $true
   }
