@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - application: alertmanager
-            build_file: dockerfile.nanoserver
+            build_file: dockerfile
             os_version: ltsc2022
             os_type: nanoserver
           - application: alertmanager
@@ -97,7 +97,7 @@ jobs:
       matrix:
         include:
           - application: alertmanager
-            build_file: dockerfile.nanoserver
+            build_file: dockerfile
             os_version: '1809'
             os_type: nanoserver
           - application: blackbox_exporter
