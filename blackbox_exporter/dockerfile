@@ -3,7 +3,7 @@ ARG OS_VERSION
 
 FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
 
-ARG VERSION=0.19.0
+ARG VERSION=0.20.0
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
