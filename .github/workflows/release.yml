@@ -45,6 +45,30 @@ jobs:
             build_file: dockerfile
             os_version: ltsc2022
             os_type: windowsservercore
+          - application: loki
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: nanoserver
+          - application: loki
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
+          - application: minio
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: nanoserver
+          - application: minio
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
+          - application: promtail
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: nanoserver
+          - application: promtail
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: windowsservercore
           #   os_version: ['ltsc2022','1809']
           #   os_type: windowsservercore
           # - application: grafana
@@ -105,6 +129,18 @@ jobs:
             os_version: '1809'
             os_type: nanoserver
           - application: prometheus
+            build_file: dockerfile
+            os_version: '1809'
+            os_type: nanoserver
+          - application: loki
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: '1809'
+          - application: minio
+            build_file: dockerfile
+            os_version: '1809'
+            os_type: nanoserver
+          - application: promtail
             build_file: dockerfile
             os_version: '1809'
             os_type: nanoserver

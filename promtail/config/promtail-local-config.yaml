@@ -1,0 +1,40 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: ./tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+- job_name: eventlog_application
+  windows_events:
+    use_incoming_timestamp: false
+    bookmark_path: "./bookmark_app.xml"
+    eventlog_name: "Application"
+    xpath_query: '*'
+    labels:
+      job: windows
+  relabel_configs:
+    - source_labels: ['computer']
+      target_label: 'host'
+- job_name: eventlog_system
+  windows_events:
+    use_incoming_timestamp: false
+    bookmark_path: "./bookmark_sys.xml"
+    eventlog_name: "System"
+    xpath_query: '*'
+    labels:
+      job: windows
+  relabel_configs:
+    - source_labels: ['computer']
+      target_label: 'host'
+# - job_name: test_folder
+#   static_configs:
+#   - targets:
+#       - localhost
+#     labels:
+#       job: test_file
+#       __path__: C:\temp\*

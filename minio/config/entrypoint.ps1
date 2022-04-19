@@ -1,0 +1,1 @@
+minio server "$($env:DATA_PATH)" --address ":$($env:SERVER_PORT)" --console-address ":$($env:CONSOLE_PORT)"

@@ -1,0 +1,31 @@
+ARG OS_TYPE
+ARG OS_VERSION
+
+FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION}
+
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ENV SERVER_PORT 9000
+ENV CONSOLE_PORT 9001
+ENV DATA_PATH "C:\minio\data"
+
+LABEL "org.opencontainers.image.authors"="MinIO"
+LABEL "org.opencontainers.image.vendor"="MinIO"
+LABEL "org.opencontainers.image.url"="https://min.io"
+LABEL "org.opencontainers.image.documentation"="https://docs.min.io/"
+LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/minio"
+LABEL "org.opencontainers.image.description"="Multi-Cloud Object Storage"
+
+RUN md C:\minio\data; \
+    Invoke-Webrequest -uri https://dl.min.io/server/minio/release/windows-amd64/minio.exe -OutFile C:\minio\minio.exe -Verbose ; \
+    Invoke-Webrequest -uri https://dl.min.io/client/mc/release/windows-amd64/mc.exe -OutFile C:\minio\mc.exe -Verbose ; \
+    $env:PATH = 'C:\minio;' + $env:PATH ; \
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\' -Name Path -Value $env:PATH
+
+ADD ./config/entrypoint.ps1 C:/minio/entrypoint.ps1
+
+USER       ContainerUser
+WORKDIR    C:/minio
+EXPOSE     ${SERVER_PORT}
+EXPOSE     ${CONSOLE_PORT}
+ENTRYPOINT [ "pwsh", "-c", "C:/minio/entrypoint.ps1" ]
