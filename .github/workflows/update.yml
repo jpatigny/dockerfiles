@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        application: ['alertmanager','blackbox_exporter','checkov','prometheus','loki','minio','promtail']
+        application: ['alertmanager','blackbox_exporter','checkov','prometheus','loki','minio','promtail','grafana']
     steps:
       - uses: actions/checkout@v2
       -

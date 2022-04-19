@@ -69,11 +69,9 @@ jobs:
             build_file: dockerfile
             os_version: ltsc2022
             os_type: windowsservercore
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: windowsservercore
-          # - application: grafana
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
+          - application: grafana
+            os_version: 'ltsc2022'
+            os_type: windowsservercore
           # - application: nexus
           #   os_version: ['ltsc2022','1809']
           #   os_type: ['nanoserver','windowsservercore']

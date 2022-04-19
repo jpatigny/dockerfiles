@@ -1,36 +1,24 @@
-ARG ostype
-ARG psversion=7.2.0
-ARG version
+ARG OS_TYPE="windowsservercore"
+ARG OS_VERSION="20h2"
 
-FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version} as build
+FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV GRAFANA_VERSION "8.2.3"
+ENV GRAFANA_VERSION "8.4.6"
 
-LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
-LABEL "org.opencontainers.image.authors"="Jeremie Patigny <jpatigny@gmail.com>"
-LABEL "org.opencontainers.image.vendor"="Jeremie Patigny"
-LABEL "org.opencontainers.image.url"="https://github.com/jpatigny/dockerfiles/grafana"
-LABEL "org.opencontainers.image.documentation"="https://github.com/jpatigny/dockerfiles/tree/main/grafana"
-LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/grafana"
-LABEL "org.opencontainers.image.ref.name"="grafana ${GRAFANA_VERSION}"
-LABEL "org.opencontainers.image.title"="grafana ${GRAFANA_VERSION}"
-LABEL "org.opencontainers.image.description"="grafana ${GRAFANA_VERSION}"
+USER ContainerAdministrator
+RUN Invoke-Webrequest -uri https://dl.grafana.com/enterprise/release/grafana-enterprise-$($env:GRAFANA_VERSION).windows-amd64.zip -outfile grafana.zip ; \
+    Expand-Archive -Path grafana.zip -DestinationPath C:\ ; \
+    mv C:\grafana* C:\grafana ; \
+    mv C:\grafana\conf\sample.ini C:\grafana\conf\grafana.ini ; \
+    (gc C:\grafana\conf\grafana.ini) -replace ';http_port','http_port' | Set-Content C:\grafana\conf\grafana.ini
 
-RUN md C:\temp ; \
-    Invoke-Webrequest -uri https://dl.grafana.com/enterprise/release/grafana-enterprise-$($env:GRAFANA_VERSION).windows-amd64.zip -outfile C:\temp\grafana-enterprise-$($env:GRAFANA_VERSION).windows-amd64.zip ; \
-    Expand-Archive -Path C:\temp\grafana-enterprise-$($env:GRAFANA_VERSION).windows-amd64.zip -DestinationPath C:\temp ; \
-    mv C:\temp\grafana* C:\temp\grafana ; \
-    mv C:\temp\grafana\conf\sample.ini C:\temp\grafana\conf\grafana.ini ; \
-    (gc C:\temp\grafana\conf\grafana.ini) -replace ';http_port','http_port' | Set-Content C:\temp\grafana\conf\grafana.ini
+FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION}
 
-FROM mcr.microsoft.com/powershell:${psversion}-${ostype}-${version}
+COPY --from=build C:/grafana C:/grafana
 
-LABEL maintainer="Jeremie Patigny <jpatigny@gmail.com>"
-
-COPY --from=build C:/temp/grafana C:/grafana
-
-WORKDIR    C:/grafana/conf
+USER       ContainerUser
+WORKDIR    C:/grafana
 EXPOSE     3000
 ENTRYPOINT [ "C:/grafana/bin/grafana-server.exe" ]
