@@ -70,6 +70,7 @@ jobs:
             os_version: ltsc2022
             os_type: windowsservercore
           - application: grafana
+            build_file: dockerfile
             os_version: 'ltsc2022'
             os_type: windowsservercore
           # - application: nexus
