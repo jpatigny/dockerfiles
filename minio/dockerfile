@@ -16,7 +16,7 @@ LABEL "org.opencontainers.image.documentation"="https://docs.min.io/"
 LABEL "org.opencontainers.image.source"="https://github.com/jpatigny/dockerfiles/tree/main/minio"
 LABEL "org.opencontainers.image.description"="Multi-Cloud Object Storage"
 
-RUN md C:\minio\data; \
+RUN md C:\minio\data ; \
     Invoke-Webrequest -uri https://dl.min.io/server/minio/release/windows-amd64/minio.exe -OutFile C:\minio\minio.exe -Verbose ; \
     Invoke-Webrequest -uri https://dl.min.io/client/mc/release/windows-amd64/mc.exe -OutFile C:\minio\mc.exe -Verbose ; \
     $env:PATH = 'C:\minio;' + $env:PATH ; \

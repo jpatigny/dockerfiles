@@ -134,8 +134,8 @@ jobs:
             os_type: nanoserver
           - application: loki
             build_file: dockerfile
-            os_version: ltsc2022
-            os_type: '1809'
+            os_version: '1809'
+            os_type: nanoserver
           - application: minio
             build_file: dockerfile
             os_version: '1809'
@@ -178,8 +178,15 @@ jobs:
         run: |
           cd $env:application
           $version = $(select-string -Path dockerfile -Pattern 'ARG VERSION').ToString().split('=')[-1]
-          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
-          $push  = "docker push jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+          if ($version) {
+            $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+            $push  = "docker push jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+          }
+          else {
+            $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($env:os_type)-$($env:os_version)"
+            $push  = "docker push jpatigny/$($env:application):$($env:os_type)-$($env:os_version)"
+          }
+          
           Write-Host "+ Build command: $build"
           Write-Host "+ Push command: $push"
           Write-Host "+ Starting build..."

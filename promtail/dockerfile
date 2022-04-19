@@ -7,6 +7,7 @@ ARG VERSION=2.5.0
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
+USER ContainerAdministrator
 RUN md C:\promtail\config,C:\promtail\tmp ; \
     Invoke-Webrequest -uri https://github.com/grafana/loki/releases/download/v$($env:VERSION)/promtail-windows-amd64.exe.zip -OutFile promtail.zip -Verbose ; \
     Expand-Archive -Path promtail.zip -DestinationPath C:\promtail -Verbose 

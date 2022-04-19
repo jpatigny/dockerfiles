@@ -7,7 +7,7 @@ ARG VERSION=2.5.0
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-RUN md C:\loki\data;C:\loki\data,C:\loki\tmp ; \
+RUN md C:\loki\data,C:\loki\data,C:\loki\tmp ; \
     Invoke-Webrequest -uri https://github.com/grafana/loki/releases/download/v$($env:VERSION)/loki-windows-amd64.exe.zip -OutFile loki.zip -Verbose ; \
     Expand-Archive -Path loki.zip -DestinationPath C:\loki -Verbose 
 
