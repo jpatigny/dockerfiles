@@ -95,9 +95,19 @@ jobs:
         shell: pwsh
         run: |
           cd $env:application
-          $version = $(select-string -Path dockerfile -Pattern 'ARG VERSION').ToString().split('=')[-1]
-          $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
-          $push  = "docker push jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+          $v = select-string -Path dockerfile -Pattern 'ARG VERSION'
+          if ($v) { 
+            $version = $v.ToString().split('=')[-1] 
+          }
+          if ($version) {
+            $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+            $push  = "docker push jpatigny/$($env:application):$($version)-$($env:os_type)-$($env:os_version)"
+          }
+          else {
+            $build = "docker build -f $env:build_file --build-arg OS_TYPE=$($env:os_type) --build-arg OS_VERSION=$($env:os_version) . -t jpatigny/$($env:application):$($env:os_type)-$($env:os_version)"
+            $push  = "docker push jpatigny/$($env:application):$($env:os_type)-$($env:os_version)"
+          }
+          
           Write-Host "+ Build command: $build"
           Write-Host "+ Push command: $push"
           Write-Host "+ Starting build..."
