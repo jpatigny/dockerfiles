@@ -19,4 +19,4 @@ ADD ./data/nginx.conf C:/nginx/conf/nginx.conf
 
 WORKDIR C:/nginx
 EXPOSE 80
-CMD ["nginx"]
+CMD ["nginx","-g","daemon off;"]
