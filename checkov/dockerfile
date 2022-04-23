@@ -3,7 +3,7 @@ ARG OS_VERSION
 
 FROM python:${OS_TYPE}-${OS_VERSION}
 
-ARG VERSION=2.0.1075
+ARG VERSION=2.0.1076
 
 LABEL "maintainer"="Jeremie Patigny <jpatigny@gmail.com>"
 LABEL "org.opencontainers.image.authors"="Jeremie Patigny <jpatigny@gmail.com>"
