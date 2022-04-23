@@ -12,14 +12,15 @@ RUN md C:\promtail\config,C:\promtail\tmp ; \
     Invoke-Webrequest -uri https://github.com/grafana/loki/releases/download/v$($env:VERSION)/promtail-windows-amd64.exe.zip -OutFile promtail.zip -Verbose ; \
     Expand-Archive -Path promtail.zip -DestinationPath C:\promtail -Verbose 
 
+ADD ./config/promtail-local-config.yaml C:/promtail/config/promtail-local-config.yaml
+
 FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION}
  
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 COPY --from=build C:/promtail C:/promtail
-ADD ./config/promtail-local-config.yaml C:/promtail/promtail-local-config.yaml
 
 USER       ContainerUser
 WORKDIR    C:/promtail
 ENTRYPOINT [ "promtail-windows-amd64.exe" ]
-CMD        [ "--config.file=C:/promtail/promtail-local-config.yaml" ]
+CMD        [ "--config.file=C:/promtail/config/promtail-local-config.yaml" ]
