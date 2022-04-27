@@ -5,7 +5,7 @@ $ErrorActionPreference = 'Stop'
 
 # variables
 $github_repo   = 'grafana'
-$application   = 'promtail'
+$application   = 'loki'
 $dockerfiles   = 'dockerfile'
 $regex_version = 'ARG VERSION=(.+)$'
 
