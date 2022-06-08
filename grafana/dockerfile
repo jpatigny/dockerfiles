@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ARG VERSION=8.5.4
+ARG VERSION=8.5.5
 
 USER ContainerAdministrator
 RUN Invoke-Webrequest -uri https://dl.grafana.com/enterprise/release/grafana-enterprise-$($env:VERSION).windows-amd64.zip -outfile grafana.zip ; \
