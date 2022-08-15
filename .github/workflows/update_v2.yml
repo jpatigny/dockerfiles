@@ -1,0 +1,92 @@
+
+name: Updates
+on:
+  schedule:
+    - cron: '0 4,16 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-publish-images:
+    name: Build and Publish
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: False
+      matrix:
+        os: [windows-2019, windows-2022]
+        application: [
+          'bridgecrewio/checkov',
+          'grafana/grafana',
+          'grafana/loki',
+          'prometheus/alertmanager', 
+          'prometheus/prometheus',
+          'prometheus/blackbox_exporter',
+          'prometheus-community/windows_exporter',
+          'traefik/traefik'
+        ]
+        file: [dockerfile]
+        os_version: ['1809', ltsc2022]
+        os_type: [nanoserver, windowsservercore]
+        exclude:
+          - os: windows-2019
+            os_version: ltsc2022
+          - os: windows-2022
+            os_version: '1809'
+          - application: 'grafana/grafana'
+            os_type: nanoserver
+          - application: 'chocolatey/choco'
+            os_type: nanoserver
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Check version of ${{ matrix.application }}
+      id: check_version
+      shell: pwsh
+      run: |
+        $check = Invoke-RestMethod "https://api.github.com/repos/${{ matrix.application }}/releases/latest" | ? { $_.draft -eq $false -and $_.prerelease -eq $false } | Select tag_name
+        [Version]$GithubVersion = $check.tag_name -replace '^v',''
+        Write-Host "[${{ matrix.application }}] Remote version from github: $GithubVersion"
+        
+        $app        = "${{ matrix.application }}" -split '/' | Select -Last 1
+        $githubRepo = 'jpatigny'
+        $img        = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/$githubRepo/$app/tags/?page_size=100"
+        $lastTag    = $img.results | Sort-Object -Property id -Descending | select -Property Name -First 1
+        
+        Write-Host "[$app] Last tag from dockerhub: $($lastTag.name)"
+        
+        $lastTag.name -match '^(.+)[-]((nano|windows)server(core)?)[-](.*)'
+        if ($Matches) {
+          [Version]$DockerHubVersion = $Matches[1]
+        }
+        else {
+          [Version]$DockerHubVersion = '0.0.0'
+        }
+        
+        Write-Host "[$app] Remote version from dockerhub: $DockerHubVersion"
+
+        if ($GithubVersion -gt $DockerHubVersion) {
+          Write-Host "::set-output name=new_version::$($GithubVersion)"
+        }
+        else {
+          Write-Host "::set-output name=new_version::false"
+        }
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      if: steps.check_version.outputs.new_version != 'false'
+      with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Docker Build
+      if: steps.check_version.outputs.new_version != 'false'
+      run: |
+        $app   = '${{ matrix.application }}' -split '/' | Select -Last 1
+        $build = "docker build -f $($app)/${{ matrix.file }} --build-arg OS_VERSION=${{ matrix.os_version }} --build-arg OS_TYPE=${{ matrix.os_type }} --build-arg VERSION=${{ steps.check_version.outputs.new_version }} -t jpatigny/$($app):${{ steps.check_version.outputs.new_version }}-${{ matrix.os_type }}-${{ matrix.os_version }} ."
+        Write-Host "Build command: $build"
+        Invoke-Expression -command $build
+        
+    - name: Docker Push
+      if: steps.check_version.outputs.new_version != 'false'
+      run: |
+        $app  = '${{ matrix.application }}' -split '/' | Select -Last 1
+        $push = "docker push jpatigny/$($app):${{ steps.check_version.outputs.new_version }}-${{ matrix.os_type }}-${{ matrix.os_version }}"
+        Write-Host "Push command: $push"
+        Invoke-Expression -command $push
