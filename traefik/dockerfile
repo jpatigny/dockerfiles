@@ -1,0 +1,25 @@
+ARG OS_VERSION="20H2"
+
+FROM mcr.microsoft.com/windows/servercore:${OS_VERSION}
+SHELL ["powershell.exe", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Metadata
+LABEL org.opencontainers.image.vendor="Traefik Labs" \
+    org.opencontainers.image.url="https://traefik.io" \
+    org.opencontainers.image.title="Traefik" \
+    org.opencontainers.image.description="A modern reverse-proxy" \
+    org.opencontainers.image.version="v${VERSION}" \
+    org.opencontainers.image.documentation="https://docs.traefik.io"
+
+ARG VERSION="2.8.3"
+RUN Invoke-WebRequest -Uri "https://github.com/traefik/traefik/releases/download/v$($env:VERSION)/traefik_v$($env:VERSION)_windows_amd64.zip" -OutFile "traefik.zip" ; \
+    Expand-Archive -Path "traefik.zip" -DestinationPath "C:\traefik\bin" ; \
+    md C:\traefik\config ; \
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/traefik/traefik/master/traefik.sample.yml -OutFile C:\traefik\config\traefik.yml ; \
+    Remove-Item "traefik.zip" -Force
+
+USER       ContainerUser
+EXPOSE     80
+WORKDIR    C:/traefik/bin
+ENTRYPOINT [ "traefik.exe" ]
+CMD        ["--configFile=C:\\traefik\\config\\traefik.yml"]
