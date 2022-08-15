@@ -33,7 +33,7 @@ jobs:
             os_version: '1809'
           - application: 'grafana/grafana'
             os_type: nanoserver
-          - application: 'chocolatey/choco'
+          - application: 'bridgecrewio/checkov'
             os_type: nanoserver
     steps:
     - name: Checkout
@@ -48,26 +48,32 @@ jobs:
         
         $app        = "${{ matrix.application }}" -split '/' | Select -Last 1
         $githubRepo = 'jpatigny'
-        $img        = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/$githubRepo/$app/tags/?page_size=100"
-        $lastTag    = $img.results | Sort-Object -Property id -Descending | select -Property Name -First 1
+        $img        = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/$githubRepo/$app/tags/?page_size=100" -ErrorAction 'SilentlyContinue'
         
-        Write-Host "[$app] Last tag from dockerhub: $($lastTag.name)"
-        
-        $lastTag.name -match '^(.+)[-]((nano|windows)server(core)?)[-](.*)'
-        if ($Matches) {
-          [Version]$DockerHubVersion = $Matches[1]
-        }
-        else {
-          [Version]$DockerHubVersion = '0.0.0'
-        }
-        
-        Write-Host "[$app] Remote version from dockerhub: $DockerHubVersion"
-
-        if ($GithubVersion -gt $DockerHubVersion) {
+        if (!$img) {
           Write-Host "::set-output name=new_version::$($GithubVersion)"
         }
         else {
-          Write-Host "::set-output name=new_version::false"
+          $lastTag = $img.results | Sort-Object -Property id -Descending | select -Property Name -First 1
+        
+          Write-Host "[$app] Last tag from dockerhub: $($lastTag.name)"
+          
+          $lastTag.name -match '^(.+)[-]((nano|windows)server(core)?)[-](.*)'
+          if ($Matches) {
+            [Version]$DockerHubVersion = $Matches[1]
+          }
+          else {
+            [Version]$DockerHubVersion = '0.0.0'
+          }
+          
+          Write-Host "[$app] Remote version from dockerhub: $DockerHubVersion"
+
+          if ($GithubVersion -gt $DockerHubVersion) {
+            Write-Host "::set-output name=new_version::$($GithubVersion)"
+          }
+          else {
+            Write-Host "::set-output name=new_version::false"
+          }
         }
     - name: Login to DockerHub
       uses: docker/login-action@v1
