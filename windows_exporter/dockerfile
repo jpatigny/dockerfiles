@@ -6,16 +6,9 @@ SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference
 
 ENV VERSION "0.19.0"
 
-RUN md C:\windows-exporter\bin ; \
-    md C:\windows-exporter\data ; \
-    md C:\windows-exporter\config ; \
-    Invoke-Webrequest -uri https://github.com/prometheus-community/windows_exporter/releases/download/v$($env:VERSION)/windows_exporter-$($env:VERSION)-amd64.exe -outfile C:\windows-exporter\bin\windows_exporter.exe -Verbose
-
-ADD ./config/windows_exporter.yml C:/windows-exporter/config/windows_exporter.yml
+RUN md C:\windows-exporter ; \
+    Invoke-Webrequest -uri https://github.com/prometheus-community/windows_exporter/releases/download/v$($env:VERSION)/windows_exporter-$($env:VERSION)-amd64.exe -outfile C:\windows-exporter\windows_exporter.exe -Verbose
 
 USER       ContainerUser
-WORKDIR    C:/windows-exporter-data
 EXPOSE     9182
-VOLUME     [ "C:/windows-exporter/data" ]
-ENTRYPOINT [ "C:/windows-exporter/bin/windows_exporter.exe" ]
-CMD        [ "--config.file=C:/windows-exporter/config/windows_exporter.yml" ]
+ENTRYPOINT [ "C:/windows-exporter/windows_exporter.exe" ]
