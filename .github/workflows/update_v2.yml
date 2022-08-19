@@ -35,6 +35,8 @@ jobs:
             os_type: nanoserver
           - application: 'bridgecrewio/checkov'
             os_type: nanoserver
+          - application: 'traefik/traefik'
+            os_type: nanoserver
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -84,6 +86,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Docker Build
+      if: steps.check_version.outputs.new_version != 'false'
       run: |
         $app   = '${{ matrix.application }}' -split '/' | Select -Last 1
         $build = "docker build -f $($app)/${{ matrix.file }} --build-arg OS_VERSION=${{ matrix.os_version }} --build-arg OS_TYPE=${{ matrix.os_type }} --build-arg VERSION=${{ steps.check_version.outputs.new_version }} -t jpatigny/$($app):${{ steps.check_version.outputs.new_version }}-${{ matrix.os_type }}-${{ matrix.os_version }} ."
