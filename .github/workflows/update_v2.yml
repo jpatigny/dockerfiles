@@ -48,12 +48,14 @@ jobs:
         
         $app        = "${{ matrix.application }}" -split '/' | Select -Last 1
         $githubRepo = 'jpatigny'
-        $img        = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/$githubRepo/$app/tags/?page_size=100" -ErrorAction 'SilentlyContinue'
-        
-        if (!$img) {
+        try {
+          $img = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/$githubRepo/$app/tags/?page_size=100" -ErrorAction 'SilentlyContinue'
+        }
+        catch {
           Write-Host "::set-output name=new_version::$($GithubVersion)"
         }
-        else {
+        
+        if ($img) {
           $lastTag = $img.results | Sort-Object -Property id -Descending | select -Property Name -First 1
         
           Write-Host "[$app] Last tag from dockerhub: $($lastTag.name)"
