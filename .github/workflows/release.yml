@@ -73,12 +73,10 @@ jobs:
             build_file: dockerfile
             os_version: 'ltsc2022'
             os_type: windowsservercore
-          # - application: nexus
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: powercli
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: windowsservercore
+          - application: http-echo
+            build_file: dockerfile
+            os_version: ltsc2022
+            os_type: nanoserver
     steps:
       -
         name: Checkout code
@@ -150,6 +148,10 @@ jobs:
             os_version: '1809'
             os_type: nanoserver
           - application: promtail
+            build_file: dockerfile
+            os_version: '1809'
+            os_type: nanoserver
+          - application: http-echo
             build_file: dockerfile
             os_version: '1809'
             os_type: nanoserver
