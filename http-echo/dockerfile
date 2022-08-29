@@ -6,10 +6,11 @@ SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference
 
 ARG VERSION=0.2.3
 
-RUN iwr -uri https://github.com/hashicorp/http-echo/releases/download/v$($env:VERSION)/http-echo_$($env:VERSION)_windows_amd64.zip -OutFile C:\Windows\temp\http.zip -Verbose ; \
-    Expand-Archive -Path C:\Windows\temp\http.zip -DestinationPath C:\http-echo -Verbose ; \
+RUN md C:\http-echo ; \
+    iwr -uri https://github.com/hashicorp/http-echo/releases/download/v$($env:VERSION)/http-echo_$($env:VERSION)_windows_amd64.zip -OutFile C:\http-echo\http.zip -Verbose ; \
+    Expand-Archive -Path C:\http-echo\http.zip -DestinationPath C:\http-echo -Verbose ; \
     mv C:\http-echo\http-echo C:\http-echo\http-echo.exe ; \
-    Remove-Item C:\Windows\temp\http.zip -Force 
+    Remove-Item C:\http-echo\http.zip -Force 
 
 USER       ContainerUser
 ENTRYPOINT [ "C:/http-echo/http-echo.exe" ]
