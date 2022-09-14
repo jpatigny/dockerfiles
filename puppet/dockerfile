@@ -1,0 +1,21 @@
+ARG OS_TYPE="windowsservercore"
+ARG OS_VERSION="20h2"
+
+FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION}
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -value 1 ; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) ; \
+    md c:\puppet ; \
+    choco install pdk -y ; \
+    choco install puppet-agent --version 6.28.0 -y ; \
+    choco install ruby -y ; \
+    choco install git -y ; \
+    choco install jq -y ; \
+    choco install yq -y
+
+RUN gem install specific_install ; \
+    gem specific_install https://github.com/ahmet2mir/librarian-puppet.git ; \
+    gem install hiera-eyaml
+
+WORKDIR C:/puppet
