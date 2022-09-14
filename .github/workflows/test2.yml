@@ -17,21 +17,21 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
       - name: Get changed files
-        id: changed-files
+        id: check
         uses: tj-actions/changed-files@v29.0.7
         with:
           json: "true"
     outputs:
-      files: ${{ steps.changed-files.outputs.all_changed_files }}
+      files: ${{ steps.check.outputs.all_changed_files }}
   build:
-    needs: changed-files
+    needs: [check]
     strategy:
       matrix:
         os: [windows-2019]
     runs-on: ${{ matrix.os }}
     steps:
       -
-        if: needs.changed-files-specific.outputs.files == ''
+        if: needs.check.outputs.files == ''
         name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - 
-        if: needs.changed-files-specific.outputs.files == ''
+        if: needs.check.outputs.files == ''
         name: build ${{ matrix.os }}
         shell: pwsh
         run: |
