@@ -21,6 +21,11 @@ jobs:
         uses: tj-actions/changed-files@v29.0.7
         with:
           json: "true"
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
     outputs:
       files: ${{ steps.check.outputs.all_changed_files }}
   build:
