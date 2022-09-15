@@ -23,7 +23,7 @@ jobs:
         uses: tj-actions/changed-files@v29.0.7
       - name: List all changed files
         run: |
-          Write-Host "${{ steps.changed-files.outputs.check }}"
+          Write-Host "${{ steps.check.outputs.all_changed_files }}"
       - if: steps.check.outputs.any_changed == 'true'
         name: Login to DockerHub
         uses: docker/login-action@v1
@@ -34,4 +34,4 @@ jobs:
         name: build ${{ matrix.os }}
         shell: pwsh
         run: |
-             Write-Host "${{ steps.changed-files.outputs.check }}"
+             Write-Host "${{ steps.check.outputs.all_changed_files }}"
