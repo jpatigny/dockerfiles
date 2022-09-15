@@ -47,7 +47,11 @@ jobs:
                if ($package -notmatch '.github') {
                 
                 cd $package
+                dir
+
                 $dockerfiles = Get-ChildItem -Path . -Filter 'dockerfile*'
+                Write-Host "dockerfiles: $dockerfiles"
+                
                 foreach($dockerfile in $dockerfiles.Name) {
                   
                   # Build args
