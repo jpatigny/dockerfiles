@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2  # OR "2" -> To retrieve the preceding commit.
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
       - name: Get changed files
         id: check
         uses: tj-actions/changed-files@v29.0.7
@@ -51,9 +51,10 @@ jobs:
 
                 $dockerfiles = Get-ChildItem -Path . -Filter 'dockerfile*'
                 Write-Host "dockerfiles: $dockerfiles"
-                
+
                 foreach($dockerfile in $dockerfiles.Name) {
-                  
+                  cat $dockerfile
+
                   # Build args
                   if ("${{ matrix.os }}" -eq 'windows-2019')           { $OSVERSION = '1809' }
                   if ("${{ matrix.os }}" -eq 'windows-2022')           { $OSVERSION = 'ltsc2022' }                  
