@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2019]
+        os: ["windows-2019"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -37,16 +37,50 @@ jobs:
         name: build ${{ matrix.os }}
         shell: pwsh
         run: |
+             # Get package list
+
              $files = ("${{ steps.check.outputs.all_changed_files }}").split(' ')
              $packages = @()
              foreach($file in $files) {
-               $package = $file.split('/') | Select -First 1
-               $package
+
+               $package = $file.split('/') | Select -First 1  
                if ($package -notmatch '.github') {
-                $packages += $package 
+                
+                cd $package
+                $dockerfiles = Get-ChildItem -Path . -Filter 'dockerfile*'
+                foreach($dockerfile in $dockerfiles) {
+                  
+                  # Build args
+                  if ("${{ matrix.os }}" -eq 'windows-2019')           { $OSVERSION = '1809' }
+                  if ("${{ matrix.os }}" -eq 'windows-2022')           { $OSVERSION = 'ltsc2022' }                  
+                  if ($dockerfile -match '^dockerfile$')               { $OSTYPE    = 'windowsservercore' }
+                  if ($dockerfile -match '^dockerfile.nano(server)?$') { $OSTYPE    = 'nanoserver' }
+
+                  Write-Host "Building $OSTYPE image from $dockerfile"
+                  $v = select-string -Path $dockerfile -Pattern 'ARG VERSION'
+                  if ($v) { 
+                    $version = $v.ToString().split('=')[-1] 
+                    $build = "docker build -f $dockerfile --build-arg OS_TYPE=$OSTYPE --build-arg OS_VERSION=$OSVERSION. -t $($env:GITHUB_REPOSITORY_OWNER)/$($package):$($version)-$($OSTYPE)-$($OSVERSION)"
+                    $push  = "docker push $($env:GITHUB_REPOSITORY_OWNER)/$($package):$($version)-$($OSTYPE)-$($OSVERSION)"
+                  }
+                  else {
+                    $build = "docker build -f $dockerfile --build-arg OS_TYPE=$OSTYPE --build-arg OS_VERSION=$OSVERSION. -t $($env:GITHUB_REPOSITORY_OWNER)/$($package):$($OSTYPE)-$($OSVERSION)"
+                    $push  = "docker push $($env:GITHUB_REPOSITORY_OWNER)/$($package):$($OSTYPE)-$($OSVERSION)"
+                  }
+                  
+                  Write-Host "+ Build command: $build"
+                  Write-Host "+ Push command: $push"
+                  Write-Host "+ Starting build..."
+                  Invoke-Expression $build
+                  if ($LASTEXITCODE -ne 0) {
+                    Throw "Build failed !"
+                  }
+                  Write-Host "Pushing image to dockerhub..."
+                  Invoke-Expression $push
+                }
                }
                else {
-                 Write-Host "package is .github folder. stopping."
+                Write-Host "package is match '.github' folder. Not a package."
                }
              }
-             $packages
+

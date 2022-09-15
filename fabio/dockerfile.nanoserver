@@ -1,0 +1,17 @@
+ARG OS_TYPE="nanoserver"
+ARG OS_VERSION="20h2"
+
+FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ARG VERSION
+
+RUN md C:\fabio\bin,C:\fabio\conf ; \
+    Invoke-Webrequest -uri https://github.com/fabiolb/fabio/releases/download/v$($env:VERSION)/fabio-$($env:VERSION)-windows_amd64.exe -OutFile C:\fabio\bin\fabio.exe ; \
+    Invoke-Webrequest -uri https://raw.githubusercontent.com/fabiolb/fabio/master/fabio.properties -OutFile C:\fabio\conf\fabio.properties
+
+USER       ContainerUser
+WORKDIR    C:/fabio
+EXPOSE     9998 9999
+ENTRYPOINT [ "C:/fabio/bin/fabio.exe" ]
+CMD        ["-cfg","C:/fabio/conf/fabio.properties"]
