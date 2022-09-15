@@ -34,4 +34,6 @@ jobs:
         name: build ${{ matrix.os }}
         shell: pwsh
         run: |
-             Write-Host "${{ steps.check.outputs.all_changed_files }}"
+             $x = "${{ steps.check.outputs.all_changed_files }}"
+             $x | Get-Member
+             $x
