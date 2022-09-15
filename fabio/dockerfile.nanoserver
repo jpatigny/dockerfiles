@@ -14,4 +14,4 @@ USER       ContainerUser
 WORKDIR    C:/fabio
 EXPOSE     9998 9999
 ENTRYPOINT [ "C:/fabio/bin/fabio.exe" ]
-CMD        ["-cfg","C:/fabio/conf/fabio.properties"]
+CMD        ["-cfg","C:/fabio/conf/fabio.properties"] 
