@@ -27,7 +27,7 @@ jobs:
           $files | Get-Member 
           $packages = @()
           $files | % {
-           $package  = ($_).split('/'') | Select -First 1
+           $package  = ($_).split('/') | Select -First 1
            $packages += $package 
           }
           $packages
