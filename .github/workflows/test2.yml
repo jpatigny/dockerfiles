@@ -21,9 +21,11 @@ jobs:
       - name: Get changed files
         id: check
         uses: tj-actions/changed-files@v29.0.7
+        with:
+          json: true
       - name: List all changed files
         run: |
-          Write-Host "${{ steps.check.outputs.all_changed_files }}"
+          Write-Host $("${{ steps.check.outputs.all_changed_files }}" | ConvertFrom-Json)"
       - if: steps.check.outputs.any_changed == 'true'
         name: Login to DockerHub
         uses: docker/login-action@v1
@@ -34,6 +36,6 @@ jobs:
         name: build ${{ matrix.os }}
         shell: pwsh
         run: |
-             $x = "${{ steps.check.outputs.all_changed_files }}"
+             $x = "${{ steps.check.outputs.all_changed_files }} | ConvertFrom-Json"
              $x | Get-Member
              $x
