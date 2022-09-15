@@ -4,7 +4,7 @@ ARG OS_VERSION="20h2"
 FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ARG VERSION=1.6.2
+ARG VERSION="1.6.2"
 
 RUN md C:\fabio\bin,C:\fabio\conf ; \
     Invoke-Webrequest -uri https://github.com/fabiolb/fabio/releases/download/v$($env:VERSION)/fabio-$($env:VERSION)-windows_amd64.exe -OutFile C:\fabio\bin\fabio.exe ; \
