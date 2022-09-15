@@ -47,13 +47,10 @@ jobs:
                if ($package -notmatch '.github') {
                 
                 cd $package
-                dir
-
                 $dockerfiles = Get-ChildItem -Path . -Filter 'dockerfile*'
                 Write-Host "dockerfiles: $dockerfiles"
 
                 foreach($dockerfile in $dockerfiles.Name) {
-                  cat $dockerfile
 
                   # Build args
                   if ("${{ matrix.os }}" -eq 'windows-2019')           { $OSVERSION = '1809' }
@@ -62,7 +59,7 @@ jobs:
                   if ($dockerfile -match '^dockerfile.nano(server)?$') { $OSTYPE    = 'nanoserver' }
 
                   Write-Host "Building $OSTYPE image from $dockerfile"
-                  $v = select-string -Path $dockerfile -Pattern 'ARG VERSION'
+                  $v = select-string -Path $dockerfile -Pattern 'ARG VERSION=(.+)'
                   if ($v) { 
                     [Version]$version = ($v.Line -split '=' | Select -Last 1).trim('"').trim("'")
                     $build = "docker build -f $dockerfile --build-arg OS_TYPE=$OSTYPE --build-arg OS_VERSION=$OSVERSION . -t $($env:GITHUB_REPOSITORY_OWNER)/$($package):$($version)-$($OSTYPE)-$($OSVERSION)"
