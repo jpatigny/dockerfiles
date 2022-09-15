@@ -40,7 +40,7 @@ jobs:
              # Get package list
 
              $files = ("${{ steps.check.outputs.all_changed_files }}").split(' ')
-             $packages = @()
+             $files = $files | Sort-Object -Unique
              foreach($file in $files) {
 
                $package = $file.split('/') | Select -First 1  
