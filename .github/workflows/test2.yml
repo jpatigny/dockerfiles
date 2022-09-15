@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ["windows-2019"]
+        os: ["windows-2019","windows2022"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -50,7 +50,7 @@ jobs:
                 $dockerfiles = Get-ChildItem -Path . -Filter 'dockerfile*'
                 Write-Host "dockerfiles: $dockerfiles"
 
-                foreach($dockerfile in $dockerfiles.Name) {
+                foreach ($dockerfile in $dockerfiles.Name) {
 
                   # Build args
                   if ("${{ matrix.os }}" -eq 'windows-2019')           { $OSVERSION = '1809' }
