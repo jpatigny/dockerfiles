@@ -48,7 +48,7 @@ jobs:
                 
                 cd $package
                 $dockerfiles = Get-ChildItem -Path . -Filter 'dockerfile*'
-                foreach($dockerfile in $dockerfiles) {
+                foreach($dockerfile in $dockerfiles.Name) {
                   
                   # Build args
                   if ("${{ matrix.os }}" -eq 'windows-2019')           { $OSVERSION = '1809' }
