@@ -22,7 +22,7 @@ jobs:
         include:
         - image: puppet
           os: windows-2019
-          base: windowsservercore-1809
+          base: windowsservercore-ltsc2019
           file: dockerfile
           version_match: PUPPET_AGENT_VERSION
         - image: puppet
