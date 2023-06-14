@@ -1,0 +1,59 @@
+name: Docker build and publish
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+    - published
+
+jobs:
+  build-publish-containers:
+    name: Build and Publish Containers
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [windows-2019, windows-2022]
+        include:
+        - image: puppet
+          os: windows-2019
+          base: windowsservercore-1809
+          file: dockerfile
+          version_match: PUPPET_AGENT_VERSION
+        - image: puppet
+          os: windows-2022
+          base: windowsservercore-ltsc2022
+          file: dockerfile
+          version_match: PUPPET_AGENT_VERSION
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Docker Build
+      id: build
+      shell: pwsh
+      run: |
+        $checkVersion = Get-Content "$PWD/$($env:file)" | Select-String -Pattern "ARG $env:version_match"
+        if ($checkVersion) {
+          $version = $checkVersion.ToString().split('=')[-1]
+          $tag = jpatigny/$($env:image):$($version)-$($env:base)
+        }
+        else {
+          $tag = jpatigny/$($env:image):$($env:base)
+        }
+        Write-Output "tag: "
+        docker build -f "$PWD/$($env:image)/${{ matrix.file }}" --build-arg BASE=${{ matrix.base }} -t $tag .  
+        Write-Output "image_tag=$($tag)" >> $Env:GITHUB_OUTPUT     
+    - name: Docker Push
+      run: |
+        docker push ${{ steps.build.outputs.image_tag }}
+ 

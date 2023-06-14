@@ -12,66 +12,6 @@ jobs:
       fail-fast: False
       matrix:
         include:
-          # - application: alertmanager
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
-          # - application: alertmanager
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: blackbox_exporter
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
-          # - application: blackbox_exporter
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: checkov
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: prometheus
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
-          # - application: prometheus
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: loki
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
-          # - application: loki
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: minio
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
-          # - application: minio
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: promtail
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
-          # - application: promtail
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: windowsservercore
-          # - application: grafana
-          #   build_file: dockerfile
-          #   os_version: 'ltsc2022'
-          #   os_type: windowsservercore
-          # - application: http-echo
-          #   build_file: dockerfile
-          #   os_version: ltsc2022
-          #   os_type: nanoserver
           - application: puppet
             build_file: dockerfile
             os_version: ltsc2022
@@ -126,56 +66,13 @@ jobs:
       fail-fast: False
       matrix:
         include:
-          # - application: alertmanager
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: blackbox_exporter
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: prometheus
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: loki
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: minio
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: promtail
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: http-echo
-          #   build_file: dockerfile
-          #   os_version: '1809'
-          #   os_type: nanoserver
-          # - application: checkov
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: chocolatey
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: windowsservercore
-          # - application: grafana
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: nexus
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
-          # - application: powercli
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: windowsservercore
-          # - application: prometheus
-          #   os_version: ['ltsc2022','1809']
-          #   os_type: ['nanoserver','windowsservercore']
           - application: puppet
             build_file: dockerfile
             os_version: '1809'
             os_type: windowsservercore
+            PUPPET_AGENT_VERSION: 6.28.0
+            PDK_VERSION: 2.4.0.1
+            RUBY_VERSION: 3.1.3.1
     steps:
       -
         name: Checkout code
