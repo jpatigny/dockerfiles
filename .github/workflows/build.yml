@@ -45,10 +45,10 @@ jobs:
         $checkVersion = Get-Content "$PWD/${{ matrix.image }}/${{ matrix.file }}" | Select-String -Pattern 'ARG ${{ matrix.version_match }}'
         if ($checkVersion) {
           $version = $checkVersion.ToString().split('=')[-1]
-          $tag = jpatigny/${{ matrix.image }}:$($version)-${{ matrix.base }}
+          $tag = "jpatigny/${{ matrix.image }}:$($version)-${{ matrix.base }}"
         }
         else {
-          $tag = jpatigny/${{ matrix.image }}:${{ matrix.base }}
+          $tag = "jpatigny/${{ matrix.image }}:${{ matrix.base }}"
         }
         Write-Output "tag: $tag"
         docker build -f "$PWD/${{ matrix.image }}/${{ matrix.file }}" --build-arg BASE=${{ matrix.base }} -t $tag .  
