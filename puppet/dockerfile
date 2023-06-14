@@ -1,4 +1,4 @@
-ARG $BASE
+ARG BASE
 
 FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-${BASE}
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
