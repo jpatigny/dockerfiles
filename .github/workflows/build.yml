@@ -42,16 +42,16 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        $checkVersion = Get-Content "$PWD/$($env:image)/$($env:file)" | Select-String -Pattern "ARG $env:version_match"
+        $checkVersion = Get-Content "$PWD/${{ matrix.image }}/${{ matrix.file }}" | Select-String -Pattern 'ARG ${{ matrix.version_match }}'
         if ($checkVersion) {
           $version = $checkVersion.ToString().split('=')[-1]
-          $tag = jpatigny/$($env:image):$($version)-$($env:base)
+          $tag = jpatigny/${{ matrix.image }}:$($version)-${{ matrix.base }}
         }
         else {
-          $tag = jpatigny/$($env:image):$($env:base)
+          $tag = jpatigny/${{ matrix.image }}:${{ matrix.base }}
         }
-        Write-Output "tag: "
-        docker build -f "$PWD/$($env:image)/${{ matrix.file }}" --build-arg BASE=${{ matrix.base }} -t $tag .  
+        Write-Output "tag: $tag"
+        docker build -f "$PWD/${{ matrix.image }}/${{ matrix.file }}" --build-arg BASE=${{ matrix.base }} -t $tag .  
         Write-Output "image_tag=$($tag)" >> $Env:GITHUB_OUTPUT     
     - name: Docker Push
       run: |
