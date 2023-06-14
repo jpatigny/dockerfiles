@@ -42,7 +42,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        $checkVersion = Get-Content "$PWD/$($env:file)" | Select-String -Pattern "ARG $env:version_match"
+        $checkVersion = Get-Content "$PWD/$($env:image)/$($env:file)" | Select-String -Pattern "ARG $env:version_match"
         if ($checkVersion) {
           $version = $checkVersion.ToString().split('=')[-1]
           $tag = jpatigny/$($env:image):$($version)-$($env:base)
