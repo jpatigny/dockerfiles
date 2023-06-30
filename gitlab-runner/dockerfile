@@ -1,0 +1,64 @@
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-${BASE} as build
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue';"]
+
+ARG VERSION_GITLAB_RUNNER=15.11.1
+ARG VERSION_GIT=2.41.0
+ARG REVISION_GIT=1
+ARG VERSION_GITLFS=3.3.0
+
+# Prerequisites 
+RUN md C:\gitlab-runner ; \
+    md C:\gitlab-runner\config ; \
+    iwr ('https://gitlab-runner-downloads.s3.amazonaws.com/v{0}/binaries/gitlab-runner-windows-amd64.exe' -f $env:VERSION_GITLAB_RUNNER) -OutFile C:\gitlab-runner\gitlab-runner.exe ; \
+    iwr ('https://github.com/git-for-windows/git/releases/download/v{0}.windows.{1}/MinGit-{0}-64-bit.zip' -f $env:VERSION_GIT, $env:REVISION_GIT) -OutFile MinGit.zip ; \ 
+    iwr ('https://github.com/git-lfs/git-lfs/releases/download/v{0}/git-lfs-windows-amd64-v{0}.zip' -f $env:VERSION_GITLFS ) -OutFile lfs.zip ; \
+    Expand-Archive -Path MinGit.zip -DestinationPath C:\Git ; \
+    Expand-Archive -Path lfs.zip -DestinationPath C:\GitLFS
+
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-${BASE}
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue';"]
+
+ARG VERSION_GITLFS=3.3.0
+
+COPY --from=build C:/Git C:/Git
+COPY --from=build C:/GitLFS/git-lfs-${VERSION_GITLFS} C:/GitLFS
+COPY --from=build C:/gitlab-runner C:/gitlab-runner
+
+RUN $newPath = ('{0};{1};{2};{3}' -f $env:Path, 'C:\gitlab-runner', 'C:\Git\cmd', 'C:\GitLFS') ; \
+    [System.Environment]::SetEnvironmentVariable('Path', $newPath, [EnvironmentVariableTarget]::Machine) ; \
+    Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -value 1 ; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) ; \
+    choco feature disable -n=showDownloadProgress ; \
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+# Powershell modules
+RUN Install-Module PowerShellGet -Force -AllowClobber ; \
+    Install-Module Pester -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module PSScriptAnalyzer -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module Foil -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module powershell-yaml -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module PSToml -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module VMware.PowerCLI -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module dbatools -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module Microsoft.PowerShell.SecretManagement -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module Microsoft.PowerShell.SecretStore -Scope AllUsers -SkipPublisherCheck -Force
+
+# Chocolatey packages
+RUN choco install -y powershell-core ; \
+    choco install -y dotnetcore-sdk ; \
+    choco install -y python ; \
+    choco install -y wget ; \
+    choco install -y curl ; \
+    choco install -y jq ; \
+    choco install -y nuget.commandline ; \
+    choco install -y awscli ; \
+    choco install -y terraform ; \
+    choco install -y tflint ; \
+    choco install -y packer ; \
+    choco install -y vault
+
+RUN pip install yamllint ; \
+    gitlab-runner install --working-directory C:\gitlab-runner --config C:\gitlab-runner\config\config.toml --syslog
+
+WORKDIR C:/gitlab-runner
+ENTRYPOINT [ "ping","-t","localhost" ]
