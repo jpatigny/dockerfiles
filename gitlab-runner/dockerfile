@@ -1,3 +1,5 @@
+ARG BASE
+
 FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-${BASE} as build
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue';"]
 
