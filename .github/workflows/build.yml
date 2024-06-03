@@ -52,6 +52,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
+        dockerd --allow-nondistributable-artifacts docker.io
         $checkVersion = Get-Content "$PWD/${{ matrix.image }}/${{ matrix.file }}" | Select-String -Pattern 'ARG ${{ matrix.version_match }}'
         if ($checkVersion) {
           $version = $checkVersion.ToString().split('=')[-1]
