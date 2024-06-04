@@ -22,7 +22,7 @@ RUN Write-Host "Installing powershell modules..." ; \
     choco install -y powershell-core ; \
     choco install -y git ; \
     choco install -y puppet-agent --version $env:PUPPET_AGENT_VERSION ; \
-    choco install -y pdk --version $env:PDK_VERSION
+    choco install -y pdk --version $env:PDK_VERSION ; \
     refreshenv ; \
     Write-Host "Installing Librarian..." ; \
     gem install librarian-puppet -v 5.0.0 ; \
