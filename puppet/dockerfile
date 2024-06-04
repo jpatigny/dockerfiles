@@ -23,12 +23,10 @@ RUN Write-Host "Installing powershell modules..." ; \
     choco install -y git ; \
     choco install -y puppet-agent --version $env:PUPPET_AGENT_VERSION ; \
     choco install -y pdk --version $env:PDK_VERSION
-
-RUN Write-Host "Installing Librarian..." ; \
-    gem install specific_install ; \
-    gem specific_install https://github.com/ahmet2mir/librarian-puppet.git
-    
-RUN [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine)
+    refreshenv ; \
+    Write-Host "Installing Librarian..." ; \
+    gem install librarian-puppet -v 5.0.0 ; \
+    [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine)
 
 WORKDIR C:/puppet
 CMD [ "pwsh.exe" ]
