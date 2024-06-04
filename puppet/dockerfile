@@ -11,20 +11,23 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) ; \
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 
-RUN Install-Module PowerShellGet -Force -AllowClobber ; \
+RUN Write-Host "Installing powershell modules..." ; \
+    Install-Module PowerShellGet -Force -AllowClobber ; \
     Install-Module Pester -Scope AllUsers -SkipPublisherCheck -Force ; \
     Install-Module Microsoft.Powershell.PSResourceGet -Scope AllUsers -Force ; \
+    Write-Host "Configuring chocolatey..." ; \
     choco feature disable -n=showDownloadProgress ; \
+    Write-Host "Installing chocolatey packages..." ; \
+    choco install -y ruby -version $env:RUBY_VERSION ; \
     choco install -y powershell-core ; \
     choco install -y git ; \
     choco install -y puppet-agent --version $env:PUPPET_AGENT_VERSION ; \
-    choco install -y pdk --version $env:PDK_VERSION ; \
-    choco install -y ruby -version $env:RUBY_VERSION ; \
-    rm $env:temp\* -Force -Recurse
+    choco install -y pdk --version $env:PDK_VERSION
 
-RUN gem install specific_install ; \
+RUN Write-Host "Installing Librarian..." ; \
+    gem install specific_install ; \
     gem specific_install https://github.com/ahmet2mir/librarian-puppet.git
-
+    
 RUN [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine)
 
 WORKDIR C:/puppet
