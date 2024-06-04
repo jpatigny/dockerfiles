@@ -30,16 +30,6 @@ jobs:
           base: windowsservercore-ltsc2022
           file: dockerfile
           version_match: PUPPET_AGENT_VERSION
-        - image: gitlab-runner
-          os: windows-2019
-          base: windowsservercore-ltsc2019
-          file: dockerfile
-          version_match: VERSION_GITLAB_RUNNER
-        - image: gitlab-runner
-          os: windows-2022
-          base: windowsservercore-ltsc2022
-          file: dockerfile
-          version_match: VERSION_GITLAB_RUNNER
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -52,7 +42,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        dockerd --allow-nondistributable-artifacts docker.io
+        # dockerd --allow-nondistributable-artifacts docker.io
         $checkVersion = Get-Content "$PWD/${{ matrix.image }}/${{ matrix.file }}" | Select-String -Pattern 'ARG ${{ matrix.version_match }}'
         if ($checkVersion) {
           $version = $checkVersion.ToString().split('=')[-1]
