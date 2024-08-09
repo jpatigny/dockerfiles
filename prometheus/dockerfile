@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/powershell:${OS_TYPE}-${OS_VERSION} as build
 
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ARG VERSION=2.53.1
+ARG VERSION=2.54.0
 
 RUN md c:\temp ; \
     Invoke-Webrequest -uri https://github.com/prometheus/prometheus/releases/download/v$($env:VERSION)/prometheus-$($env:VERSION).windows-amd64.zip -outfile "C:\temp\prometheus-$($env:VERSION).windows-amd64.zip" ; \
