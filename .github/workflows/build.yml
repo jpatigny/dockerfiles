@@ -30,6 +30,11 @@ jobs:
           base: windowsservercore-ltsc2022
           file: dockerfile
           version_match: PUPPET_AGENT_VERSION
+        - image: puppet
+          os: windows-2022
+          base: ltsc2022
+          file: dockerfile
+          version_match: PUPPET_AGENT_VERSION
     steps:
     - name: Checkout
       uses: actions/checkout@v2
