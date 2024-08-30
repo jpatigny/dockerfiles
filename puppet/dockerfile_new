@@ -7,7 +7,7 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 ARG PUPPET_AGENT_VERSION=8.6.0
 # ARG PDK_VERSION=3.2.0.1
 
-COPY puppet-agent.json C:/puppet-agent.json
+COPY [".\puppet-agent.json", "C:/puppet-agent.json"]
 
 USER ContainerAdministrator
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
