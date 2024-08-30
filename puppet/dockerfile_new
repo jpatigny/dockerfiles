@@ -7,13 +7,13 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 ARG PUPPET_AGENT_VERSION=8.6.0
 # ARG PDK_VERSION=3.2.0.1
 
-COPY puppet-agent.json C:/puppet-agent.json
+COPY data/ C:/data
 
 USER ContainerAdministrator
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
     Invoke-RestMethod -Uri 'https://get.scoop.sh' -OutFile 'install.ps1' ; \
     .\install.ps1 -RunAsAdmin ; \
-    scoop install C:/puppet-agent.json --global ; \
+    scoop install C:/data/puppet-agent.json --global ; \
     scoop install ruby --global ; \
     scoop install pwsh --global ; \
     scoop install git --global ; \
