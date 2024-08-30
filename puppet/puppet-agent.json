@@ -1,0 +1,19 @@
+{
+    "version": "8.6.0",
+    "description": "An open-core software configuration management tool.",
+    "homepage": "https://puppetlabs.com",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.puppetlabs.com/windows/puppet8/puppet-agent-8.6.0-x64.msi",
+            "hash": "F7300644AB19639731B7F14E441A45C4ADDC0E8228ADE72DB442AF362C9306A3"
+        }
+    },
+    "bin": [
+        "Puppet Labs\\Puppet\\bin\\facter.bat",
+        "Puppet Labs\\Puppet\\bin\\facter_interactive.bat",
+        "Puppet Labs\\Puppet\\bin\\hiera.bat",
+        "Puppet Labs\\Puppet\\bin\\puppet.bat",
+        "Puppet Labs\\Puppet\\bin\\puppet_interactive.bat"
+    ]
+  }
