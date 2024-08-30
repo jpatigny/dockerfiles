@@ -16,8 +16,7 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     scoop install C:/data/puppet-agent.json --global ; \
     scoop install ruby --global ; \
     scoop install pwsh --global ; \
-    scoop install git --global ; \
-    psmodule
+    scoop install git --global
 
 # USER ContainerAdministrator
 # RUN msiexec /qn /norestart /i https://downloads.puppetlabs.com/windows/puppet8/pdk-$($env:PDK_VERSION)-x64.msi && \
