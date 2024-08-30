@@ -16,7 +16,8 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     scoop install C:/data/puppet-agent.json --global ; \
     scoop install ruby --global ; \
     scoop install pwsh --global ; \
-    scoop install git --global
+    scoop install git --global ; \
+    scoop install pester --global ; \
 
 # USER ContainerAdministrator
 # RUN msiexec /qn /norestart /i https://downloads.puppetlabs.com/windows/puppet8/pdk-$($env:PDK_VERSION)-x64.msi && \
@@ -25,9 +26,7 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
 
 # Install the Pester PowerShell module
-RUN Set-PSResourceRepository -Name PSGallery -Trusted ; \
-    Install-PSResource -Name Pester -Scope CurrentUser ; \
-    Write-Host "Installing Librarian..." ; \
+RUN Write-Host "Installing Librarian..." ; \
     gem install librarian-puppet -v 5.0.0 ; \
     [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine) ; \
     Remove-Item -Path "$env:TEMP\*" -Force -Recurse ; \
