@@ -13,7 +13,7 @@ USER ContainerAdministrator
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
     Invoke-RestMethod -Uri 'https://get.scoop.sh' -OutFile 'install.ps1' ; \
     .\install.ps1 -RunAsAdmin ; \
-    scoop install C:/data/puppet-agent.json --global ; \
+    scoop install C:/data/puppet-agent.json ; \
     scoop install ruby --global ; \
     scoop install pwsh --global ; \
     scoop install git --global ; \
