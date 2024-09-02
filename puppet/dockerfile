@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/windows/servercore:${BASE}
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
 
-COPY helpers.ps1 C:/temp/helpers.ps1
+COPY ./puppet/helpers.ps1 C:/temp/helpers.ps1
 
 ARG PUPPET_AGENT_VERSION=6.28.0
 ARG PDK_VERSION=3.2.0.1
