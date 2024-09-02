@@ -1,0 +1,32 @@
+ARG BASE
+
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-${BASE}
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
+
+ARG PUPPET_AGENT_VERSION=8.6.0
+ARG PDK_VERSION=3.2.0.1
+ARG RUBY_VERSION=3.3.1.1
+
+RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -value 1 ; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) ; \
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+RUN Write-Host "Installing powershell modules..." ; \
+    Install-Module PowerShellGet -Force -AllowClobber ; \
+    Install-Module Pester -Scope AllUsers -SkipPublisherCheck -Force ; \
+    Install-Module Microsoft.Powershell.PSResourceGet -Scope AllUsers -Force ; \
+    Write-Host "Configuring chocolatey..." ; \
+    choco feature disable -n=showDownloadProgress ; \
+    Write-Host "Installing chocolatey packages..." ; \
+    choco install -y ruby -version $env:RUBY_VERSION ; \
+    choco install -y powershell-core ; \
+    choco install -y git ; \
+    choco install -y puppet-agent --version $env:PUPPET_AGENT_VERSION ; \
+    choco install -y pdk --version $env:PDK_VERSION
+
+RUN Write-Host "Installing Librarian..." ; \
+    gem install librarian-puppet -v 5.0.0 ; \
+    [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine)
+
+WORKDIR C:/puppet
+CMD [ "pwsh.exe" ]

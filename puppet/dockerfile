@@ -1,32 +1,30 @@
 ARG BASE
 
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-${BASE}
+FROM mcr.microsoft.com/windows/servercore:${BASE}
+
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
 
-ARG PUPPET_AGENT_VERSION=8.6.0
+COPY helpers.ps1 C:/temp/helpers.ps1
+
+ARG PUPPET_AGENT_VERSION=6.28.0
 ARG PDK_VERSION=3.2.0.1
-ARG RUBY_VERSION=3.3.1.1
+ARG RUBY_VERSION=3.3.4-1
 
-RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -value 1 ; \
-    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) ; \
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
+	$client = New-Object System.Net.WebClient ; \
+    $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet8/pdk-$($env:PDK_VERSION)-x64.msi\",\"C:\temp\pdk-$($env:PDK_VERSION)-x64.msi\") ; \
+    $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet8/puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\",\"C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\") ; \
+	$client.DownloadFile(\"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-$($env:RUBY_VERSION)/rubyinstaller-$($env:RUBY_VERSION)-x64.exe\",\"C:\temp\rubyinstaller.exe\") ; \
+	. C:\temp\helpers.ps1 ; \
+	Install-MSI "C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi" ; \
+	Install-MSI "C:\temp\pdk-$($env:PDK_VERSION)-x64.msi" ; \
+	& C:\temp\rubyinstaller.exe /verysilent /currentuser ; \
+	Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force ; \
+    Install-Module -Name Pester -Force -SkipPublisherCheck ; \
+	[System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine)
 
-RUN Write-Host "Installing powershell modules..." ; \
-    Install-Module PowerShellGet -Force -AllowClobber ; \
-    Install-Module Pester -Scope AllUsers -SkipPublisherCheck -Force ; \
-    Install-Module Microsoft.Powershell.PSResourceGet -Scope AllUsers -Force ; \
-    Write-Host "Configuring chocolatey..." ; \
-    choco feature disable -n=showDownloadProgress ; \
-    Write-Host "Installing chocolatey packages..." ; \
-    choco install -y ruby -version $env:RUBY_VERSION ; \
-    choco install -y powershell-core ; \
-    choco install -y git ; \
-    choco install -y puppet-agent --version $env:PUPPET_AGENT_VERSION ; \
-    choco install -y pdk --version $env:PDK_VERSION
-
-RUN Write-Host "Installing Librarian..." ; \
-    gem install librarian-puppet -v 5.0.0 ; \
-    [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine)
+RUN gem install librarian-puppet -v 5.0.0 ; \
+    Remove-Item C:\temp -Force -Recurse
 
 WORKDIR C:/puppet
-CMD [ "pwsh.exe" ]
+CMD [ "powershell.exe", "-NoLogo" ]
