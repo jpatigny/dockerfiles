@@ -9,13 +9,16 @@ COPY ./puppet/helpers.ps1 C:/temp/helpers.ps1
 ARG PUPPET_AGENT_VERSION=6.28.0
 ARG PDK_VERSION=3.2.0.1
 ARG RUBY_VERSION=3.3.4-1
+ARG PWSH_VERSION=7.4.5
 
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
 	$client = New-Object System.Net.WebClient ; \
     $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet/pdk-$($env:PDK_VERSION)-x64.msi\",\"C:\temp\pdk-$($env:PDK_VERSION)-x64.msi\") ; \
     $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet6/puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\",\"C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\") ; \
 	$client.DownloadFile(\"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-$($env:RUBY_VERSION)/rubyinstaller-$($env:RUBY_VERSION)-x64.exe\",\"C:\temp\rubyinstaller.exe\") ; \
+    $client.DownloadFile(\"https://github.com/PowerShell/PowerShell/releases/download/v$($env:PWSH_VERSION)/PowerShell-$($env:PWSH_VERSION)-win-x64.msi\",\"C:\temp\pwsh.exe\") ; \
 	. C:\temp\helpers.ps1 ; \
+	Install-MSI "C:\temp\pwsh.msi" ; \
 	Install-MSI "C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi" ; \
 	Install-MSI "C:\temp\pdk-$($env:PDK_VERSION)-x64.msi" ; \
 	& C:\temp\rubyinstaller.exe /verysilent /currentuser ; \
