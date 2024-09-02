@@ -30,4 +30,4 @@ RUN gem install librarian-puppet -v 5.0.0 ; \
     Remove-Item C:\temp -Force -Recurse
 
 WORKDIR C:/puppet
-CMD [ "powershell.exe", "-NoLogo" ]
+CMD [ "pwsh.exe", "-NoLogo", "-NoProfileLoadTime" ]
