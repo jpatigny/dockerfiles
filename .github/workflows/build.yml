@@ -22,12 +22,22 @@ jobs:
         - image: puppet
           os: windows-2019
           base: ltsc2019
-          file: dockerfile
+          file: dockerfile6
           version_match: PUPPET_AGENT_VERSION
         - image: puppet
           os: windows-2022
           base: ltsc2022
-          file: dockerfile
+          file: dockerfile6
+          version_match: PUPPET_AGENT_VERSION
+        - image: puppet
+          os: windows-2019
+          base: ltsc2019
+          file: dockerfile8
+          version_match: PUPPET_AGENT_VERSION
+        - image: puppet
+          os: windows-2022
+          base: ltsc2022
+          file: dockerfile8
           version_match: PUPPET_AGENT_VERSION
     steps:
     - name: Checkout
