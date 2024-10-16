@@ -6,6 +6,7 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 COPY ./puppet/helpers.ps1 C:/temp/helpers.ps1
 
+ARG GIT_VERSION=2.47.0
 ARG PUPPET_AGENT_VERSION=8.6.0
 ARG PDK_VERSION=3.3.0.0
 ARG RUBY_VERSION=3.3.5-1
@@ -17,6 +18,7 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet8/puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\",\"C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\") ; \
     $client.DownloadFile(\"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-$($env:RUBY_VERSION)/rubyinstaller-$($env:RUBY_VERSION)-x64.exe\",\"C:\temp\rubyinstaller.exe\") ; \
     $client.DownloadFile(\"https://github.com/PowerShell/PowerShell/releases/download/v$($env:PWSH_VERSION)/PowerShell-$($env:PWSH_VERSION)-win-x64.msi\",\"C:\temp\pwsh.msi\") ; \
+    Expand-Archive -Path C:\temp\git.zip -DestinationPath C:\git ; \
     . C:\temp\helpers.ps1 ; \
     Install-MSI "C:\temp\pwsh.msi" ; \
     Install-MSI "C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi" ; \
@@ -24,6 +26,7 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force ; \
     Install-Module -Name Pester -Force -SkipPublisherCheck ; \
     [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine) ; \
+    [System.Environment]::SetEnvironmentVariable("Path", "C:\git\cmd;C:\git\bin;" + [Environment]::GetEnvironmentVariable("Path", "Machine"), "Machine") ; \
     Start-Process -FilePath C:\temp\rubyinstaller.exe -ArgumentList '/verysilent /currentuser' -Wait  ; \
     Remove-Item C:\temp -Force -Recurse
 
