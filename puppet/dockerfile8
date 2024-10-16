@@ -26,7 +26,7 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force ; \
     Install-Module -Name Pester -Force -SkipPublisherCheck ; \
     [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine) ; \
-    [System.Environment]::SetEnvironmentVariable("Path", "C:\git\cmd;C:\git\bin;" + [Environment]::GetEnvironmentVariable("Path", "Machine"), "Machine") ; \
+    [System.Environment]::SetEnvironmentVariable('Path', 'C:\git\cmd;C:\git\bin;' + [Environment]::GetEnvironmentVariable('Path', 'Machine'), 'Machine') ; \
     Start-Process -FilePath C:\temp\rubyinstaller.exe -ArgumentList '/verysilent /currentuser' -Wait  ; \
     Remove-Item C:\temp -Force -Recurse
 
