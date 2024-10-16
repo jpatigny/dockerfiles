@@ -7,8 +7,8 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 COPY ./puppet/helpers.ps1 C:/temp/helpers.ps1
 
 ARG PUPPET_AGENT_VERSION=6.28.0
-ARG PDK_VERSION=3.2.0.1
-ARG RUBY_VERSION=3.3.1-1
+ARG PDK_VERSION=3.3.0.0
+ARG RUBY_VERSION=3.3.5-1
 ARG PWSH_VERSION=7.4.5
 
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
@@ -24,7 +24,7 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force ; \
     Install-Module -Name Pester -Force -SkipPublisherCheck ; \
     [System.Environment]::SetEnvironmentVariable('PDK_DISABLE_ANALYTICS', 'true', [EnvironmentVariableTarget]::Machine) ; \
-    Start-Process -FilePath C:\temp\rubyinstaller.exe -ArgumentList '/verysilent /currentuser /tasks=\"assocfiles,noridkinsall,modpath\"' -Wait  ; \
+    Start-Process -FilePath C:\temp\rubyinstaller.exe -ArgumentList '/verysilent /currentuser' -Wait  ; \
     Remove-Item C:\temp -Force -Recurse
 
 RUN gem install specific_install ; \
