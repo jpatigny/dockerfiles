@@ -8,7 +8,7 @@ COPY ./puppet/helpers.ps1 C:/temp/helpers.ps1
 
 ARG PUPPET_AGENT_VERSION=8.6.0
 ARG PDK_VERSION=3.2.0.1
-ARG RUBY_VERSION=3.3.4-1
+ARG RUBY_VERSION=3.3.1-1
 ARG PWSH_VERSION=7.4.5
 
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
@@ -27,7 +27,8 @@ RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name '
     Start-Process -FilePath C:\temp\rubyinstaller.exe -ArgumentList '/verysilent /currentuser' -Wait  ; \
     Remove-Item C:\temp -Force -Recurse
 
-RUN gem install librarian-puppet -v 5.0.0
+RUN gem install specific_install ; \
+    gem specific_install https://github.com/jpatigny/librarian-puppet.git
 
 WORKDIR C:/puppet
 CMD [ "pwsh.exe", "-NoLogo", "-NoProfileLoadTime" ]
