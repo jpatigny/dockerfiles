@@ -7,14 +7,14 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 COPY ./puppet/helpers.ps1 C:/temp/helpers.ps1
 
 ARG GIT_VERSION=2.47.0
-ARG PUPPET_AGENT_VERSION=8.6.0
+ARG PUPPET_AGENT_VERSION=8.10.0
 ARG PDK_VERSION=3.3.0.0
-ARG RUBY_VERSION=3.3.5-1
-ARG PWSH_VERSION=7.4.5
+ARG RUBY_VERSION=3.3.6-2
+ARG PWSH_VERSION=7.4.6
 
 RUN Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1 ; \
     $client = New-Object System.Net.WebClient ; \
-    $client.DownloadFile(\"https://github.com/git-for-windows/git/releases/download/v$($env:GIT_VERSION).windows.1/MinGit-$($env:GIT_VERSION)-busybox-64-bit.zip\",\"C:\temp\git.zip\") ; \
+    $client.DownloadFile(\"https://github.com/git-for-windows/git/releases/download/v$($env:GIT_VERSION).windows.1/MinGit-$($env:GIT_VERSION).2-busybox-64-bit.zip\",\"C:\temp\git.zip\") ; \
     $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet/pdk-$($env:PDK_VERSION)-x64.msi\",\"C:\temp\pdk-$($env:PDK_VERSION)-x64.msi\") ; \
     $client.DownloadFile(\"https://downloads.puppetlabs.com/windows/puppet8/puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\",\"C:\temp\puppet-agent-$($env:PUPPET_AGENT_VERSION)-x64.msi\") ; \
     $client.DownloadFile(\"https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-$($env:RUBY_VERSION)/rubyinstaller-$($env:RUBY_VERSION)-x64.exe\",\"C:\temp\rubyinstaller.exe\") ; \
