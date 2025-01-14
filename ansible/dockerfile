@@ -1,38 +1,44 @@
-# Base image
 FROM alpine:latest
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    ANSIBLE_CORE_VERSION=2.18.1 \
-    PIP_NO_CACHE_DIR=1
+ARG ANSIBLE_CORE_VERSION=2.18.1
+ARG ANSIBLE_LINT=24.12.2
+ENV ANSIBLE_CORE_VERSION ${ANSIBLE_CORE_VERSION}
+ENV ANSIBLE_LINT ${ANSIBLE_LINT}
 
-# Install dependencies
-RUN apk add --no-cache \
-    bash \
-    curl \
-    git \
-    openssh \
-    python3 \
-    py3-pip \
-    krb5 \
-    krb5-libs \
-    krb5-dev \
-    gcc \
-    libc-dev \
-    musl-dev \
-    libffi-dev \
-    make \
-    && pip3 install --upgrade pip \
-    && pip3 install \
-        ansible-core==${ANSIBLE_CORE_VERSION} \
-        pypsrp \
-    && apk del gcc libc-dev musl-dev libffi-dev krb5-dev make
+RUN apk --no-cache add \
+        sudo \
+        python3\
+        py3-pip \
+        openssl \
+        ca-certificates \
+        sshpass \
+        openssh-client \
+        rsync \
+        git && \
+    apk --no-cache add --virtual build-dependencies \
+        python3-dev \
+        libffi-dev \
+        musl-dev \
+        gcc \
+        cargo \
+        build-base && \
+        psrp
+    find /usr/lib/python* -name "EXTERNALLY-MANAGED" -exec rm {} \; && \
+    pip3 install --upgrade pip wheel && \
+    pip3 install --upgrade cryptography cffi && \
+    pip3 install ansible-core==${ANSIBLE_CORE_VERSION} && \
+    pip3 install --ignore-installed ansible-lint==${ANSIBLE_LINT} && \
+    pip3 install mitogen jmespath && \
+    pip3 install --upgrade pywinrm && \
+    apk del build-dependencies && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /root/.cache/pip && \
+    rm -rf /root/.cargo
 
-# Add SSH client configuration
-RUN mkdir -p /etc/ssh && echo "Host *\n    StrictHostKeyChecking no" > /etc/ssh/ssh_config
+RUN mkdir /ansible && \
+    mkdir -p /etc/ansible && \
+    echo 'localhost' > /etc/ansible/hosts
 
-# Default workdir
-WORKDIR /workdir
+WORKDIR /ansible
 
-# Command to start a shell by default
-CMD ["/bin/bash"]
+CMD [ "ansible-playbook", "--version" ]
