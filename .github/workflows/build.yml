@@ -51,6 +51,7 @@ jobs:
           version_match: PUPPET_AGENT_VERSION
         - image: ansible
           os: ubuntu-latest
+          base: alpine
           file: dockerfile
           version_match: ANSIBLE_CORE_VERSION
     steps:
