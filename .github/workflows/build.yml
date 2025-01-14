@@ -50,6 +50,7 @@ jobs:
           file: dockerfile8
           version_match: PUPPET_AGENT_VERSION
         - image: ansible
+          os: ubuntu-latest
           file: dockerfile
           version_match: ANSIBLE_CORE_VERSION
     steps:
