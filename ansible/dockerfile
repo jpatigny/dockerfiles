@@ -1,0 +1,38 @@
+# Base image
+FROM alpine:latest
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    ANSIBLE_CORE_VERSION=2.18.1 \
+    PIP_NO_CACHE_DIR=1
+
+# Install dependencies
+RUN apk add --no-cache \
+    bash \
+    curl \
+    git \
+    openssh \
+    python3 \
+    py3-pip \
+    krb5 \
+    krb5-libs \
+    krb5-dev \
+    gcc \
+    libc-dev \
+    musl-dev \
+    libffi-dev \
+    make \
+    && pip3 install --upgrade pip \
+    && pip3 install \
+        ansible-core==${ANSIBLE_CORE_VERSION} \
+        pypsrp \
+    && apk del gcc libc-dev musl-dev libffi-dev krb5-dev make
+
+# Add SSH client configuration
+RUN mkdir -p /etc/ssh && echo "Host *\n    StrictHostKeyChecking no" > /etc/ssh/ssh_config
+
+# Default workdir
+WORKDIR /workdir
+
+# Command to start a shell by default
+CMD ["/bin/bash"]

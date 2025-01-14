@@ -49,6 +49,9 @@ jobs:
           base: ltsc2025
           file: dockerfile8
           version_match: PUPPET_AGENT_VERSION
+        - image: ansible
+          file: dockerfile
+          version_match: ANSIBLE_CORE_VERSION
     steps:
     - name: Checkout
       uses: actions/checkout@v2
